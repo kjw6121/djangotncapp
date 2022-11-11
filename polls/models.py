@@ -25,3 +25,14 @@ class Blog(models.Model):
     
 def summary(self):
         return self.body[:30]
+
+
+
+
+class Uid(models.Model):
+    성명 = models.CharField(max_length=10, blank=True, null=True)
+    pw = models.CharField(max_length=10, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = '사용자'
