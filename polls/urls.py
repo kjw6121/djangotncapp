@@ -6,7 +6,7 @@ from polls.views import *
 
 urlpatterns = [
     ##path('', views.index, name='index'),
-    path('', index, name="home"), 
+    path('', index, name="index"), 
     path('hello/', hello, name="hello"),
     path('new/', new, name="new"),
     path('<str:id>', detail, name="detail"),
