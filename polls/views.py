@@ -3,22 +3,13 @@ from django.http import HttpResponseRedirect
 from django.template import loader
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
-from .models import Boxtd
 from .models import Blog
-from .forms import Register
-
-##def index(request): 
-    ##boxtds = Boxtd.objects.all()
-    ##context = {'boxtds':boxtds}
-    ##return render(request, 'polls/index.html', context)
-
-def welcome(request):
-    return render(request, 'polls/welcome.html')
+from .models import Users
+from .forms import UserCreationForm
+from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm
 
 
-def hello(request):
-    userName = request.GET["name"]
-    return render(request, "polls/hello.html", {'userName' : userName})
 
 def new(request):
     return render(request, 'polls/new.html')
@@ -27,6 +18,7 @@ def new(request):
 def home(request):
     blogs = Blog.objects.all()
     return render(request, 'polls/home.html', { 'blogs': blogs })
+
 
 
 def detail(request, id):
@@ -65,22 +57,17 @@ def delete(request, id):
     return redirect('home')
 
 
-
-def index(request):
-    # if this is a POST request we need to process the form data
+# Create your views here.
+def signup(request):
     if request.method == 'POST':
-        # create a form instance and populate it with data from the request:
-        form = Register(request.POST)
-
-        # check whether it's valid:
+        form = UserCreationForm(request.POST)
         if form.is_valid():
-            # process the data in form.cleaned_data as required
-            # ...
-            # redirect to a new URL:
-            return HttpResponse("안녕하세요 pybo에 오신것을 환영합니다.")
-
-    # if a GET (or any other method) we'll create a blank form
+            form.save()
+            # 게시글 목록 페이지
+            return redirect('polls:home')
     else:
-        form = Register()
-
-    return render(request, 'polls/index.html', {'form': form})
+        form = UserCreationForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'polls/signup.html', context)

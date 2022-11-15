@@ -7,13 +7,6 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 
-class Boxtd(models.Model):
-    pbox = models.CharField(max_length=50, primary_key=True)
-
-    class Meta:
-        managed = False
-        db_table = 'boxtd'
-
 
 # Create your models here.
 class Blog(models.Model):
@@ -29,9 +22,11 @@ def summary(self):
 
 
 
-class Uid(models.Model):
+class Users(models.Model):
     성명 = models.CharField(max_length=10, blank=True, null=True)
     pw = models.CharField(max_length=10, blank=True, null=True)
+
+    
 
     class Meta:
         managed = False

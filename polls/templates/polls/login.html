@@ -1,0 +1,13 @@
+{% extends 'polls/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+<!--<h1>로그인</h1> -->
+<form action   ="" method="post" novailidate>
+  {% csrf_token %}
+  {% bootstrap_form form %}
+    <input type="submit" value="로그인" class="btn btn-primary">
+</form>
+
+<a href="{% url 'polls:signup' %}">회원가입</a>
+{% endblock %}

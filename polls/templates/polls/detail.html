@@ -12,8 +12,8 @@
     <p>작성일자: {{ blog.pub_date }}</p>
     <hr>
     <p>{{ blog.body }}</p>
-    <a href="{% url 'edit' blog.id %}">수정하기</a>
-    <a href="{% url 'delete' blog.id %}">삭제하기</a>
+    <a href="{% url 'polls:edit' blog.id %}">수정하기</a>
+    <a href="{% url 'polls:delete' blog.id %}">삭제하기</a>
 </body>
 </html>
 

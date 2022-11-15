@@ -1,0 +1,27 @@
+{% load django_bootstrap5 %}
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django</title>
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+
+</head>
+
+<body>
+    <div style="padding:20px;"> <h1>TNC 공용기관리시스템</h1>
+    <P>&nbsp;&nbsp;
+        {% if user.is_authenticated %}
+            {{ user }}님이 접속중입니다.
+            <a href="{% url 'polls:logout' %}">로그아웃</a>
+        {% else %}
+            <a href="/polls/login">로그인</a>
+        {% endif %}
+    </p>
+    {% block content %}
+    {% endblock %}
+</div>
+</body>
+</html>
