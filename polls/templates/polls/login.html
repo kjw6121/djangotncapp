@@ -1,8 +1,15 @@
-{% extends 'polls/base.html' %}
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django</title>
+  
+</head>
 
-
-{% block content %}
-<!--<h1>로그인</h1> -->
+<body>
+    <div style="padding:20px;"> <h1>TNC 공용기관리시스템</h1>
+   <!--<h1>로그인</h1> -->
 <form method="post" action="{% url 'polls:login' %}">
   {% csrf_token %}
   <div>
@@ -18,4 +25,6 @@
 
 
 <a href="{% url 'polls:signup' %}">회원가입</a>
-{% endblock %}
+</div>
+</body>
+</html>
