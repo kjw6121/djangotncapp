@@ -1,5 +1,4 @@
 {% extends 'polls/base.html' %}
-{% load django_bootstrap5 %}
 
 {% block content %}
 
@@ -18,22 +17,3 @@
 
 {% endblock %}
 
-{% extends 'polls/base.html' %}
-{% load django_bootstrap5 %}
-
-{% block content %}
-
-<br>
-<br>
-<br>
-
-<a href="{% url 'polls:new' %}">작업입력</a>
-
-<H2>진행현황</H2>
-
-    {% for blog in blogs %}
-        <P><a href="{% url 'polls:detail' blog.id %}">{{ blog.title }}</a>&nbsp;&nbsp;&nbsp;{{ blog.writer }}&nbsp;&nbsp;&nbsp;{{ blog.summary }} </P>
-  
-    {% endfor %}
-
-{% endblock %}
