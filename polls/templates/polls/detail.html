@@ -1,19 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail</title>
-</head>
+{% extends 'polls/base.html' %}
+
+{% block content %}
+
 <body>
-    <h1>제목: {{ blog.title }}</h1>
-    <p>작성자: {{ blog.writer }}</p>
-    <p>작성일자: {{ blog.pub_date }}</p>
+    <h1>작업내용</h1>
+    <p>작성자: {{ boxtr.truck }}</p>
+    <p>작성일자: {{ boxtr.pub_date }}</p>
     <hr>
-    <p>{{ blog.body }}</p>
-    <a href="{% url 'polls:edit' blog.id %}">수정하기</a>
-    <a href="{% url 'polls:delete' blog.id %}">삭제하기</a>
+
+    <p>도착시간: {{boxtr.arrival }}</p>
+    <p>침수여부: {{boxtr.wet }}</p>
+    <hr>
+
+    <p>박스명: {{boxtr.box1 }}&nbsp;&nbsp;&nbsp;{{boxtr.box1_qty }}&nbsp;p</p>
+    <p>박스명: {{boxtr.box2 }}&nbsp;&nbsp;&nbsp;{{boxtr.box2_qty }}&nbsp;p</p>
+    <p>박스명: {{boxtr.box3 }}&nbsp;&nbsp;&nbsp;{{boxtr.box3_qty }}&nbsp;p</p>
+    <p>박스명: {{boxtr.box4 }}&nbsp;&nbsp;&nbsp;{{boxtr.box4_qty }}&nbsp;p</p>
+    <p>박스명: {{boxtr.box5 }}&nbsp;&nbsp;&nbsp;{{boxtr.box5_qty }}&nbsp;p</p>
+    
+    <a href="{% url 'polls:edit' boxtr.id %}">수정하기</a>
+    <a href="{% url 'polls:delete' boxtr.id %}">삭제하기</a>
 </body>
-</html>
+
+
+{% endblock %}
+
 

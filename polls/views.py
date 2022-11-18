@@ -14,19 +14,14 @@ def new(request):
     return render(request, 'polls/new.html')
 
 
-#def home(request):
- #   blogs = Blog.objects.all()
-  #  return render(request, 'polls/home.html', { 'blogs': blogs })
-
-
 def home(request):
     boxtr_sums = Boxtr_sum.objects.all()
     return render(request, 'polls/home.html', { 'boxtr_sums': boxtr_sums })
 
 
 def detail(request, id):
-    blog = Blog.objects.get(id = id)
-    return render(request, 'polls/detail.html', { 'blog': blog })
+    boxtr = Boxtr.objects.get(id = id)
+    return render(request, 'polls/detail.html', { 'boxtr': boxtr })
 
 
 
