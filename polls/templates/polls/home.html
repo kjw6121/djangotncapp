@@ -2,16 +2,16 @@
 
 {% block content %}
 
-<br>
-<br>
-<br>
 
-<a href="{% url 'polls:new' %}">작업입력</a>
+<a href="{% url 'polls:post_new' %}">작업입력</a>
 
 <H2>진행현황</H2>
 
-    {% for blog in blogs %}
-        <P><a href="{% url 'polls:detail' blog.id %}">{{ blog.title }}</a>&nbsp;&nbsp;&nbsp;{{ blog.writer }}&nbsp;&nbsp;&nbsp;{{ blog.summary }} </P>
+    {% for boxtr_sum in boxtr_sums %}
+        <P><a href="{% url 'polls:detail' boxtr_sum.id %}">{{ boxtr_sum.id }}</a>&nbsp;&nbsp;&nbsp;{{ boxtr_sum.truck }}&nbsp;&nbsp;&nbsp;{{ boxtr_sum.arrival }}&nbsp;&nbsp;&nbsp;{{ boxtr_sum.wet }}
+            &nbsp;&nbsp;&nbsp;{{ boxtr_sum.box_qty }}&nbsp;&nbsp;&nbsp;{{ boxtr_sum.pub_date }}
+        
+        </P>
   
     {% endfor %}
 

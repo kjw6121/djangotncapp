@@ -3,9 +3,8 @@ from django.http import HttpResponseRedirect
 from django.template import loader
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
-from .models import Blog
-from .models import Users
-from .forms import UserCreationForm
+from .models import Blog, Boxtr, Boxtr_sum
+from .forms import UserCreationForm, boxform
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 
@@ -15,15 +14,21 @@ def new(request):
     return render(request, 'polls/new.html')
 
 
-def home(request):
-    blogs = Blog.objects.all()
-    return render(request, 'polls/home.html', { 'blogs': blogs })
+#def home(request):
+ #   blogs = Blog.objects.all()
+  #  return render(request, 'polls/home.html', { 'blogs': blogs })
 
+
+def home(request):
+    boxtr_sums = Boxtr_sum.objects.all()
+    return render(request, 'polls/home.html', { 'boxtr_sums': boxtr_sums })
 
 
 def detail(request, id):
     blog = Blog.objects.get(id = id)
     return render(request, 'polls/detail.html', { 'blog': blog })
+
+
 
 
 def create(request):
@@ -71,3 +76,38 @@ def signup(request):
         'form': form
     }
     return render(request, 'polls/signup.html', context)
+
+def post_new(request):
+    
+    
+    if request.method == 'POST':
+        form = boxform(request.POST, request.FILES)
+        currentuser = request.user
+        if form.is_valid():
+            new_boxtr = Boxtr()
+                    
+            new_boxtr.truck = currentuser
+            new_boxtr.pub_date = timezone.now()
+            new_boxtr.arrival = form.cleaned_data['arrival']
+            new_boxtr.wet = form.cleaned_data['wet']
+            
+            new_boxtr.box1 = form.cleaned_data['box1']
+            new_boxtr.box1_qty = form.cleaned_data['box1_qty']
+            new_boxtr.box2 = form.cleaned_data['box2']
+            new_boxtr.box2_qty = form.cleaned_data['box2_qty']
+            new_boxtr.box3 = form.cleaned_data['box3']
+            new_boxtr.box3_qty = form.cleaned_data['box3_qty']
+            new_boxtr.box4 = form.cleaned_data['box4']
+            new_boxtr.box4_qty = form.cleaned_data['box4_qty']
+            new_boxtr.box5 = form.cleaned_data['box5']
+            new_boxtr.box5_qty = form.cleaned_data['box5_qty']
+            
+            new_boxtr.save()
+            
+
+        return redirect('polls:home')
+    else:   
+            form=boxform()
+            context = {'form': form}
+      
+    return render(request, 'polls/post_new.html', context)

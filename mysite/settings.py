@@ -83,11 +83,12 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'mssql',
-        'NAME': 'technetdbver3',
+        'NAME': 'tnc_django',
         'USER': 'kim_jinwoo',
         'PASSWORD': 'technet4111',
         'HOST': 'technetdb.czo9ia0scsp3.ap-northeast-2.rds.amazonaws.com',
         'PORT': '1433',
+        'unicode_results': True,
     }
 }
 

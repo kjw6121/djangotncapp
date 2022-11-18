@@ -3,24 +3,25 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Django</title>
+    <title>TNC공용기관리시스템</title>
   
 </head>
 
 <body>
     <div style="padding:20px;"> <h1>TNC 공용기관리시스템</h1>
-   <!--<h1>로그인</h1> -->
+    <h2><span style="color:#3EE900;">로그인</span></h2>
 <form method="post" action="{% url 'polls:login' %}">
   {% csrf_token %}
-  <div>
-    <label>사용자 ID</label>
+  <div align='right' style="width:260px">
+    <label>사용자ID</label>
     <input type="text" name="username" id="username">
   </div>
-  <div>
+  <div align='right' style="width:260px">
     <label>비밀번호</label>
-    <input type="text" name="password" id="password">
+    <input type='password' name="password" id="password">
+    
   </div>
-  <button type="submit">로그인</button>
+  <pre>         <button type="submit">로그인</button></pre>
 </form>
 
 
