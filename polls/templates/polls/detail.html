@@ -5,6 +5,7 @@
 
 <body>
     <h1>작업내용</h1>
+    <p>일련번호: {{ boxtr.id }}</p>
     <p>작성자: {{ boxtr.truck }}</p>
     <p>작성일자: {{ boxtr.pub_date }}</p>
     <hr>
@@ -19,7 +20,7 @@
     <p>박스명: {{boxtr.box4 }}&nbsp;&nbsp;&nbsp;{{boxtr.box4_qty }}&nbsp;p</p>
     <p>박스명: {{boxtr.box5 }}&nbsp;&nbsp;&nbsp;{{boxtr.box5_qty }}&nbsp;p</p>
     
-    <a href="{% url 'polls:edit' boxtr.id %}">수정하기</a>
+    <a href="{% url 'polls:post_update' boxtr.id %}">수정하기</a>
     <a href="{% url 'polls:delete' boxtr.id %}">삭제하기</a>
 </body>
 

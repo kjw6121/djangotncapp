@@ -18,13 +18,30 @@ def home(request):
     boxtr_sums = Boxtr_sum.objects.all()
     return render(request, 'polls/home.html', { 'boxtr_sums': boxtr_sums })
 
+# listings/views.py
 
 def detail(request, id):
     boxtr = Boxtr.objects.get(id = id)
     return render(request, 'polls/detail.html', { 'boxtr': boxtr })
 
+# listings/views.py
 
+...
+def delete(request, id):
+    delete_boxtr = Boxtr.objects.get(id=id) # we need this for both GET and POST
 
+    if request.method == 'POST':
+        # delete the band from the database
+        delete_boxtr.delete()
+        # redirect to the bands list
+        return redirect('polls:home')
+
+    # no need for an `else` here. If it's a GET request, just continue
+
+    return render(request,
+                    'polls/delete.html',
+                    {'delete_boxtr': delete_boxtr})
+...
 
 def create(request):
     new_blog = Blog()
@@ -36,9 +53,32 @@ def create(request):
 
     return redirect('detail', new_blog.id)
 
+
+
 def edit(request, id):
-    edit_blog = Blog.objects.get(id= id)
-    return render(request, 'polls/edit.html', {'blog': edit_blog})
+    edit_boxtr = Boxtr.objects.get(id= id)
+    form = boxform(instance=edit_boxtr)
+    context =  {'form': form}
+
+    return render(request, 'polls/edit_new.html', context)
+
+
+
+def post_update(request, id):
+    boxtr = get_object_or_404(Boxtr, id=id)
+          
+    if request.method == 'POST':
+        form = boxform(request.POST, instance=boxtr)
+        if form.is_valid():
+            form.save()
+            return redirect('polls:detail', boxtr.id)
+    else:   
+            form = boxform(instance=boxtr)
+            context = {'form': form}
+      
+    return render(request, 'polls/edit_new.html', context)
+
+
 
 def update(request, id):
     update_blog = Blog.objects.get(id= id)
@@ -49,13 +89,6 @@ def update(request, id):
     update_blog.save()
 
     return redirect('detail', update_blog.id)
-
-def delete(request, id):
-    delete_blog = Blog.objects.get(id= id)
-    delete_blog.delete()
-
-    return redirect('home')
-
 
 # Create your views here.
 def signup(request):
@@ -106,3 +139,4 @@ def post_new(request):
             context = {'form': form}
       
     return render(request, 'polls/post_new.html', context)
+

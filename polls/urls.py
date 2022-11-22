@@ -11,6 +11,7 @@ urlpatterns = [
     path('new/', new, name="new"),
     path('create/', create, name="create"),
     path('edit/<str:id>', edit, name="edit"),
+    path('post_edit/<str:id>', edit, name="post_edit"),
     path('update/<str:id>', update, name="update"),
     path('detail/<str:id>', detail, name="detail"),
     path('delete/<str:id>', delete, name="delete"),
@@ -18,6 +19,7 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('signup/', signup, name='signup'),
     path('post_new/', post_new, name='post_new'),
+    path('post_update/<str:id>', post_update, name='post_update'),
     
     
     ]

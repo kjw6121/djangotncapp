@@ -96,7 +96,7 @@ class Boxtr(models.Model):
     flift = models.CharField(max_length=50, blank=True, null=True)
     truck = models.CharField(max_length=50, blank=True, null=True)
     arrival = models.CharField(max_length=50, blank=True, null=True, choices=ARRIVAL_CHOICES)
-    pub_date = models.DateTimeField(blank=True, null=True)
+    pub_date = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     wet = models.CharField(max_length=50, blank=True, null=True, choices=WET_CHOICES, default='No')
     box1 = models.CharField(max_length=50, blank=True, null=True, choices=BOX_CHOICES)
     box1_qty = models.IntegerField(blank=True, null=True, choices=INTEGER_CHOICES)

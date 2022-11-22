@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <div style="padding:5px;"> <h1>TNC 공용기관리시스템</h1>
+    <div style="padding:5px;"> <h1><a href="{% url 'polls:home' %}"> 공용기관리시스템</a></h1>
     <P>&nbsp;&nbsp;
         {% if user.is_authenticated %}
             {{ user }}님이 접속중입니다.
@@ -18,6 +18,10 @@
             <a href="/polls/login">로그인</a>
         {% endif %}
     </p>
+    <p>
+
+        <a href="{% url 'polls:post_new' %}">작업입력</a>&nbsp;&nbsp;<a href="{% url 'polls:home' %}">메인화면</a>
+        </p>
     {% block content %}
     {% endblock %}
 </div>
