@@ -3,10 +3,10 @@ from django.http import HttpResponseRedirect
 from django.template import loader
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
-from .models import Blog, Boxtr, Boxtr_sum
+from .models import Blog, Boxtr, Boxtr_sum, Boxtr_stock
 from .forms import UserCreationForm, boxform
-from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
 
 
 
@@ -26,22 +26,22 @@ def detail(request, id):
 
 # listings/views.py
 
-...
+
 def delete(request, id):
-    delete_boxtr = Boxtr.objects.get(id=id) # we need this for both GET and POST
+    delete_boxtr = Boxtr.objects.get(id=id) 
+    if delete_boxtr.truck != request.user.username :
+       return render(request, 'polls/alert.html')
 
     if request.method == 'POST':
-        # delete the band from the database
         delete_boxtr.delete()
-        # redirect to the bands list
         return redirect('polls:home')
 
-    # no need for an `else` here. If it's a GET request, just continue
-
-    return render(request,
-                    'polls/delete.html',
-                    {'delete_boxtr': delete_boxtr})
-...
+    else :
+        
+        return render(request,
+                'polls/delete.html',
+                {'delete_boxtr': delete_boxtr})
+    
 
 def create(request):
     new_blog = Blog()
@@ -66,7 +66,9 @@ def edit(request, id):
 
 def post_update(request, id):
     boxtr = get_object_or_404(Boxtr, id=id)
-          
+    if boxtr.truck != request.user.username :
+       return render(request, 'polls/alert.html')
+        
     if request.method == 'POST':
         form = boxform(request.POST, instance=boxtr)
         if form.is_valid():
@@ -75,20 +77,11 @@ def post_update(request, id):
     else:   
             form = boxform(instance=boxtr)
             context = {'form': form}
-      
+    
     return render(request, 'polls/edit_new.html', context)
 
 
 
-def update(request, id):
-    update_blog = Blog.objects.get(id= id)
-    update_blog.title = request.POST['title']
-    update_blog.writer = request.POST['writer']
-    update_blog.body = request.POST['body']
-    update_blog.pub_date = timezone.now()
-    update_blog.save()
-
-    return redirect('detail', update_blog.id)
 
 # Create your views here.
 def signup(request):
@@ -139,4 +132,33 @@ def post_new(request):
             context = {'form': form}
       
     return render(request, 'polls/post_new.html', context)
+
+
+def unloading(request, id) :    
+    boxtr = Boxtr.objects.get(id=id)
+    boxtr.status = "done"
+    boxtr.flift = request.user.username
+    boxtr.pub_date = timezone.now()
+    boxtr.save()
+    
+    
+    return redirect('polls:home')
+
+def loading(request, id) :
+    boxtr = Boxtr.objects.get(id=id)
+    b = Boxtr(truck=request.user.username, arrival=boxtr.arrival, pub_date=timezone.now(), wet='No',
+              box1=boxtr.box1, box1_qty=boxtr.box1_qty, box2=boxtr.box2, box2_qty=boxtr.box2_qty,
+              box3=boxtr.box3, box3_qty=boxtr.box3_qty, box4=boxtr.box4, box4_qty=boxtr.box4_qty,
+              box5=boxtr.box5, box5_qty=boxtr.box5_qty
+              )
+    b.save()
+    
+    boxtr = Boxtr.objects.get(id=id)
+    boxtr.status = "done"
+    boxtr.flift = request.user.username
+    boxtr.pub_date = timezone.now()
+    boxtr.save()
+    
+    
+    return redirect('polls:home')
 

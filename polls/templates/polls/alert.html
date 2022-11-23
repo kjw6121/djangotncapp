@@ -7,18 +7,10 @@
   
 </head>
 
-
 <body>
-  <p>정말 작업내용을 삭제하시겠습니까?</p>
+<p>작성자만 삭제할수 있습니다.</p>
 
-  
-<form action="" method="post">
-    {% csrf_token %}
-    <input type="submit" value="삭제합니다.">
+<a href="{% url 'polls:home' %}">돌아가기</a>
 
-    <a href="{% url 'polls:home' %}">취소가기</a>
-  
-
-
-    </form>
 </body>
+

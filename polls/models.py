@@ -8,6 +8,7 @@
 from django.db import models
 
 
+
 # Create your models here.
 class Blog(models.Model):
     title = models.CharField(max_length=200)
@@ -41,14 +42,15 @@ BOX_11='XMA'
 BOX_12='일반히터'
 BOX_13='GPB'
 BOX_14='GPG'
-BOX_15='기타'
+BOX_15='PS'
+BOX_16='기타'
 
 
  
 BOX_CHOICES= [
-    (BOX_1,'DN8 TILT'), (BOX_2,'YF TILT'), (BOX_3,'Height'),
+    (BOX_1,'DN8_TILT'), (BOX_2,'YF_TILT'), (BOX_3,'Height'),
      (BOX_4,'LX2_10'), (BOX_5,'LX2_12'), (BOX_6,'JOEM'), (BOX_7,'파워내장'), (BOX_8,'파워일반'), (BOX_9,'파워포장'), (BOX_10,'PU'), (BOX_11,'XMA'),
-    (BOX_12,'일반히터'), (BOX_13,'GPB'), (BOX_14,'GPG'), (BOX_15, "기타")
+    (BOX_12,'일반히터'), (BOX_13,'GPB'), (BOX_14,'GPG'), (BOX_15, "PS"), (BOX_16, "기타")
        
     ]
  
@@ -128,3 +130,13 @@ class Boxtr_sum(models.Model):
     class Meta:
         managed = False
         db_table = 'boxtr_sum'
+
+
+        
+class Boxtr_stock(models.Model):
+ 
+    id = models.BigAutoField(primary_key=True)
+    box = models.CharField(max_length=50, blank=True, null=True, choices=BOX_CHOICES)
+    box_qty = models.IntegerField(blank=True, null=True)
+    user = models.CharField(max_length=50, blank=True, null=True)
+    pub_date = models.DateTimeField(blank=True, null=True)
