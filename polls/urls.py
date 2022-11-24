@@ -21,6 +21,7 @@ urlpatterns = [
     path('post_update/<str:id>', post_update, name='post_update'),
     path('unloading/<str:id>', unloading, name='unloading'),
     path('loading/<str:id>', loading, name='loading'),
+    path('boxtrstock/', boxtrstock, name='boxtrstock'),
 
     
     

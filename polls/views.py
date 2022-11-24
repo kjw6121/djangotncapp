@@ -18,6 +18,12 @@ def home(request):
     boxtr_sums = Boxtr_sum.objects.all()
     return render(request, 'polls/home.html', { 'boxtr_sums': boxtr_sums })
 
+
+def boxtrstock(request):
+    boxtr_stocks = Boxtr_stock.objects.all()
+    return render(request, 'polls/boxstock.html', { 'boxtr_stocks': boxtr_stocks })
+
+
 # listings/views.py
 
 def detail(request, id):
@@ -100,65 +106,73 @@ def signup(request):
 
 def post_new(request):
     
-    
-    if request.method == 'POST':
-        form = boxform(request.POST, request.FILES)
-        currentuser = request.user
-        if form.is_valid():
-            new_boxtr = Boxtr()
-                    
-            new_boxtr.truck = currentuser
-            new_boxtr.pub_date = timezone.now()
-            new_boxtr.arrival = form.cleaned_data['arrival']
-            new_boxtr.wet = form.cleaned_data['wet']
+    if request.user.is_authenticated:
             
-            new_boxtr.box1 = form.cleaned_data['box1']
-            new_boxtr.box1_qty = form.cleaned_data['box1_qty']
-            new_boxtr.box2 = form.cleaned_data['box2']
-            new_boxtr.box2_qty = form.cleaned_data['box2_qty']
-            new_boxtr.box3 = form.cleaned_data['box3']
-            new_boxtr.box3_qty = form.cleaned_data['box3_qty']
-            new_boxtr.box4 = form.cleaned_data['box4']
-            new_boxtr.box4_qty = form.cleaned_data['box4_qty']
-            new_boxtr.box5 = form.cleaned_data['box5']
-            new_boxtr.box5_qty = form.cleaned_data['box5_qty']
-            
-            new_boxtr.save()
-            
+        if request.method == 'POST':
+            form = boxform(request.POST, request.FILES)
+            currentuser = request.user
+            if form.is_valid():
+                new_boxtr = Boxtr()
+                        
+                new_boxtr.truck = currentuser
+                new_boxtr.pub_date = timezone.now()
+                new_boxtr.arrival = form.cleaned_data['arrival']
+                new_boxtr.wet = form.cleaned_data['wet']
+                
+                new_boxtr.box1 = form.cleaned_data['box1']
+                new_boxtr.box1_qty = form.cleaned_data['box1_qty']
+                new_boxtr.box2 = form.cleaned_data['box2']
+                new_boxtr.box2_qty = form.cleaned_data['box2_qty']
+                new_boxtr.box3 = form.cleaned_data['box3']
+                new_boxtr.box3_qty = form.cleaned_data['box3_qty']
+                new_boxtr.box4 = form.cleaned_data['box4']
+                new_boxtr.box4_qty = form.cleaned_data['box4_qty']
+                new_boxtr.box5 = form.cleaned_data['box5']
+                new_boxtr.box5_qty = form.cleaned_data['box5_qty']
+                
+                new_boxtr.save()
+                
 
-        return redirect('polls:home')
-    else:   
-            form=boxform()
-            context = {'form': form}
-      
-    return render(request, 'polls/post_new.html', context)
+            return redirect('polls:home')
+        else:   
+                form=boxform()
+                context = {'form': form}
+        
+        return render(request, 'polls/post_new.html', context)
+    else :
+        return render(request, 'polls/alert2.html')
 
 
-def unloading(request, id) :    
-    boxtr = Boxtr.objects.get(id=id)
-    boxtr.status = "done"
-    boxtr.flift = request.user.username
-    boxtr.pub_date = timezone.now()
-    boxtr.save()
-    
+def unloading(request, id) :   
+    if request.user.is_authenticated: 
+        boxtr = Boxtr.objects.get(id=id)
+        boxtr.status = "done"
+        boxtr.pub_date = timezone.now()
+        boxtr.save()
+    else :
+        return render(request, 'polls/alert2.html')
+        
     
     return redirect('polls:home')
 
 def loading(request, id) :
-    boxtr = Boxtr.objects.get(id=id)
-    b = Boxtr(truck=request.user.username, arrival=boxtr.arrival, pub_date=timezone.now(), wet='No',
-              box1=boxtr.box1, box1_qty=boxtr.box1_qty, box2=boxtr.box2, box2_qty=boxtr.box2_qty,
-              box3=boxtr.box3, box3_qty=boxtr.box3_qty, box4=boxtr.box4, box4_qty=boxtr.box4_qty,
-              box5=boxtr.box5, box5_qty=boxtr.box5_qty
-              )
-    b.save()
-    
-    boxtr = Boxtr.objects.get(id=id)
-    boxtr.status = "done"
-    boxtr.flift = request.user.username
-    boxtr.pub_date = timezone.now()
-    boxtr.save()
-    
-    
-    return redirect('polls:home')
+    if request.user.is_authenticated: 
+        boxtr = Boxtr.objects.get(id=id)
+        b = Boxtr(truck=request.user.username, arrival=boxtr.arrival, pub_date=timezone.now(), wet='No', status = 'loading',
+                box1=boxtr.box1, box1_qty=boxtr.box1_qty, box2=boxtr.box2, box2_qty=boxtr.box2_qty,
+                box3=boxtr.box3, box3_qty=boxtr.box3_qty, box4=boxtr.box4, box4_qty=boxtr.box4_qty,
+                box5=boxtr.box5, box5_qty=boxtr.box5_qty
+                )
+        b.save()
+        
+        boxtr = Boxtr.objects.get(id=id)
+        boxtr.status = "done"
+        boxtr.pub_date = timezone.now()
+        boxtr.save()
+        
+        
+        return redirect('polls:home')
+    else :
+        return render(request, 'polls/alert2.html')
+        
 

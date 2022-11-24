@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+{% extends 'polls/base.html' %}
+
+{% block content %}
+
+<H2>세척창고 재고현황</H2>
+
+    <p>박스명&nbsp;&nbsp;&nbsp;재고수량&nbsp;&nbsp;&nbsp;입고예정</p>
+
+    {% for boxtr_stock in boxtr_stocks %}
+       
+        <P>{{ boxtr_stock.box }}</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_stock.재고수량 }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_stock.입고예정 }}        
+        </P>
+  
+    {% endfor %}
+
+{% endblock %}
+

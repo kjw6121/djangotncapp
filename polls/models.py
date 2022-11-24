@@ -131,12 +131,15 @@ class Boxtr_sum(models.Model):
         managed = False
         db_table = 'boxtr_sum'
 
-
+ 
         
 class Boxtr_stock(models.Model):
  
-    id = models.BigAutoField(primary_key=True)
-    box = models.CharField(max_length=50, blank=True, null=True, choices=BOX_CHOICES)
-    box_qty = models.IntegerField(blank=True, null=True)
-    user = models.CharField(max_length=50, blank=True, null=True)
-    pub_date = models.DateTimeField(blank=True, null=True)
+    box = models.CharField(primary_key=True, max_length=50) 
+    재고수량 = models.IntegerField(blank=True, null=True)
+    입고예정 = models.IntegerField(blank=True, null=True)
+    
+    class Meta:
+        managed = False
+        db_table = 'boxtr_stock'
+
