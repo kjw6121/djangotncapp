@@ -22,6 +22,7 @@ urlpatterns = [
     path('unloading/<str:id>', unloading, name='unloading'),
     path('loading/<str:id>', loading, name='loading'),
     path('boxtrstock/', boxtrstock, name='boxtrstock'),
+    path('boxtrstatus/', boxtrstatus, name='boxtrstatus'),
 
     
     

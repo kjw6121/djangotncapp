@@ -20,8 +20,9 @@
     </p>
     <p>
 
-        <a href="{% url 'polls:post_new' %}">작업입력</a>&nbsp;&nbsp;<a href="{% url 'polls:home' %}">메인화면</a>
-        &nbsp;&nbsp;<a href="{% url 'polls:boxtrstock' %}">세척장재고현황</a>
+        <a href="{% url 'polls:home' %}">메인화면</a>&nbsp;&nbsp;<a href="{% url 'polls:post_new' %}">작업입력</a>
+        &nbsp;&nbsp;<a href="{% url 'polls:boxtrstock' %}">재고현황</a>
+        &nbsp;&nbsp;<a href="{% url 'polls:boxtrstatus' %}">입출고내역</a>
         </p>
     {% block content %}
     {% endblock %}

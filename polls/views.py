@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.template import loader
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
-from .models import Blog, Boxtr, Boxtr_sum, Boxtr_stock
+from .models import Blog, Boxtr, Boxtr_sum, Boxtr_stock, Boxtr_status
 from .forms import UserCreationForm, boxform
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
@@ -22,6 +22,11 @@ def home(request):
 def boxtrstock(request):
     boxtr_stocks = Boxtr_stock.objects.all()
     return render(request, 'polls/boxstock.html', { 'boxtr_stocks': boxtr_stocks })
+
+
+def boxtrstatus(request):
+    boxtr_status = Boxtr_status.objects.all()
+    return render(request, 'polls/boxtrstatus.html', { 'boxtr_status': boxtr_status })
 
 
 # listings/views.py
@@ -110,11 +115,10 @@ def post_new(request):
             
         if request.method == 'POST':
             form = boxform(request.POST, request.FILES)
-            currentuser = request.user
             if form.is_valid():
                 new_boxtr = Boxtr()
                         
-                new_boxtr.truck = currentuser
+                new_boxtr.truck = request.user.username
                 new_boxtr.pub_date = timezone.now()
                 new_boxtr.arrival = form.cleaned_data['arrival']
                 new_boxtr.wet = form.cleaned_data['wet']
@@ -129,6 +133,8 @@ def post_new(request):
                 new_boxtr.box4_qty = form.cleaned_data['box4_qty']
                 new_boxtr.box5 = form.cleaned_data['box5']
                 new_boxtr.box5_qty = form.cleaned_data['box5_qty']
+                if request.user.username == "오성균" :
+                    new_boxtr.status = "loading"
                 
                 new_boxtr.save()
                 

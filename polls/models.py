@@ -143,3 +143,29 @@ class Boxtr_stock(models.Model):
         managed = False
         db_table = 'boxtr_stock'
 
+
+        
+class Boxtr_status(models.Model):
+ 
+    
+    id = models.BigAutoField(primary_key=True)
+    truck = models.CharField(max_length=50, blank=True, null=True)
+    arrival = models.CharField(max_length=50, blank=True, null=True)
+    pub_date = models.DateTimeField(blank=True, null=True, auto_now_add=True)
+    wet = models.CharField(max_length=50, blank=True, null=True)
+    box1 = models.CharField(max_length=50, blank=True, null=True)
+    box1_qty = models.IntegerField(blank=True, null=True)
+    box2 = models.CharField(max_length=50, blank=True, null=True)
+    box2_qty = models.IntegerField(blank=True, null=True)
+    box3 = models.CharField(max_length=50, blank=True, null=True)
+    box3_qty = models.IntegerField(blank=True, null=True)
+    box4 = models.CharField(max_length=50, blank=True, null=True)
+    box4_qty = models.IntegerField(blank=True, null=True)
+    box5 = models.CharField(max_length=50, blank=True, null=True)
+    box5_qty = models.IntegerField(blank=True, null=True)
+    qty = models.IntegerField(blank=True, null=True)
+    status = models.CharField(max_length=50, blank=True, null=True)
+    
+    class Meta:
+        managed = False
+        db_table = 'boxtr_status'
