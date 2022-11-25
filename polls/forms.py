@@ -40,8 +40,8 @@ class boxform(forms.ModelForm):
         }
         
         widgets = {
-            'arrival': forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
-            'wet' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
+            'arrival': forms.Select(attrs={'class':'form_control'}),
+            'wet' : forms.Select(attrs={'class':'form_control'}),
             'box1' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
             'box1_qty' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
             'box2' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
