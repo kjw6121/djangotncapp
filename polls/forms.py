@@ -40,18 +40,18 @@ class boxform(forms.ModelForm):
         }
         
         widgets = {
-            'arrival': forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 20px'}),
-            'wet' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 20px'}),
-            'box1' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 20px'}),
-            'box1_qty' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 20px'}),
-            'box2' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 20px'}),
-            'box2_qty' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 20px'}),
-            'box3' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 20px'}),
-            'box3_qty' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 20px'}),
-            'box4' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 20px'}),
-            'box4_qty' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 20px'}),
-            'box5' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 20px'}),
-            'box5_qty' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 20px'}),
+            'arrival': forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
+            'wet' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
+            'box1' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
+            'box1_qty' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
+            'box2' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
+            'box2_qty' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
+            'box3' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
+            'box3_qty' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
+            'box4' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
+            'box4_qty' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
+            'box5' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
+            'box5_qty' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
             
             
                                   
