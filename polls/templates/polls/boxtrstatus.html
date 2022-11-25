@@ -3,18 +3,18 @@
 
 {% block content %}
 
-<H2>세척창고 입출고이력</H2>
+<H3>세척창고 입출고이력</H3>
 
     {% for boxtr_status in boxtr_status %}
        
         <P>{{ boxtr_status.id }}</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.status }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.truck }}
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.arrival }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.wet }}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.arrival|default_if_none:"" }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.wet }}
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.qty }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.box1 }}
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.box1_qty }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.box2 }}
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.box2_qty }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.box3 }}
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.box3_qty }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.box4 }}
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.box4_qty }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.box5 }}
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.box5_qty }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.pub_date }}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.box1_qty|default_if_none:"" }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.box2|default_if_none:"" }}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.box2_qty|default_if_none:"" }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.box3|default_if_none:"" }}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.box3_qty|default_if_none:"" }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.box4|default_if_none:"" }}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.box4_qty|default_if_none:"" }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.box5|default_if_none:"" }}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.box5_qty|default_if_none:"" }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ boxtr_status.pub_date }}
 
         </P>
   

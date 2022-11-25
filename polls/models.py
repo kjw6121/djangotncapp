@@ -28,8 +28,8 @@ WET_NO = 'No'
 
 WET_CHOICES = [(WET_YES,'Yes'), (WET_NO, 'No')]
 
-BOX_1='DN8 TILT'
-BOX_2='YF TILT'
+BOX_1='DN8_TILT'
+BOX_2='YF_TILT'
 BOX_3='Height'
 BOX_4='LX2_10'
 BOX_5='LX2_12'

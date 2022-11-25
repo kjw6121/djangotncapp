@@ -4,22 +4,21 @@
 {% block content %}
 
 <body>
-    <h1>작업내용</h1>
-    <p>일련번호: {{ boxtr.id }}</p>
-    <p>작성자: {{ boxtr.truck }}</p>
-    <p>작성일자: {{ boxtr.pub_date }}</p>
-    <hr>
-
-    <p>도착시간: {{boxtr.arrival }}</p>
-    <p>침수여부: {{boxtr.wet }}</p>
-    <hr>
-
-    <p>박스명: {{boxtr.box1 }}&nbsp;&nbsp;&nbsp;{{boxtr.box1_qty }}&nbsp;p</p>
-    <p>박스명: {{boxtr.box2 }}&nbsp;&nbsp;&nbsp;{{boxtr.box2_qty }}&nbsp;p</p>
-    <p>박스명: {{boxtr.box3 }}&nbsp;&nbsp;&nbsp;{{boxtr.box3_qty }}&nbsp;p</p>
-    <p>박스명: {{boxtr.box4 }}&nbsp;&nbsp;&nbsp;{{boxtr.box4_qty }}&nbsp;p</p>
-    <p>박스명: {{boxtr.box5 }}&nbsp;&nbsp;&nbsp;{{boxtr.box5_qty }}&nbsp;p</p>
+    <h4>작업내용</h4>
     
+    <hr>
+    <p>{{ boxtr.id }}&nbsp;&nbsp;&nbsp;{{ boxtr.truck }}&nbsp;&nbsp;&nbsp;{{ boxtr.pub_date }}</p>
+    <hr>
+
+    <p>도착시간: {{boxtr.arrival }}&nbsp;&nbsp;&nbsp;침수여부: {{boxtr.wet }}</p>
+    <hr>
+    <p>박스종류&nbsp;&nbsp;&nbsp;수량</p>
+    <p>{{ boxtr.box1|default_if_none:"" }}&nbsp;&nbsp;&nbsp;{{boxtr.box1_qty }}</p>
+    <p>{{ boxtr.box2|default_if_none:"" }}&nbsp;&nbsp;&nbsp;{{ boxtr.box2_qty|default_if_none:"" }}</p>
+    <p>{{ boxtr.box3|default_if_none:"" }}&nbsp;&nbsp;&nbsp;{{ boxtr.box3_qty|default_if_none:"" }}</p>
+    <p>{{ boxtr.box4|default_if_none:"" }}&nbsp;&nbsp;&nbsp;{{ boxtr.box4_qty|default_if_none:"" }}</p>
+    <p>{{ boxtr.box5|default_if_none:"" }}&nbsp;&nbsp;&nbsp;{{ boxtr.box5_qty|default_if_none:"" }}</p>
+
     <a href="{% url 'polls:loading' boxtr.id %}">하차/상차완료</a>
     <a href="{% url 'polls:unloading' boxtr.id %}">하차완료</a>
     <a href="{% url 'polls:post_update' boxtr.id %}">수정하기</a>
