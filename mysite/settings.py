@@ -137,11 +137,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #static
 STATIC_URL = '/static/'
-STATIC_DIR = os.path.join(BASE_DIR, 'static')
-STATICFILES_DIRS = [
-    STATIC_DIR,
-]
-STATIC_ROOT = os.path.join(ROOT_DIR, '.static_root')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+
 
 # 로그인 성공 시 자동으로 이동할 URL
 LOGIN_REDIRECT_URL = '/polls/'
