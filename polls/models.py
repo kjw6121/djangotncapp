@@ -6,6 +6,7 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
+from django.utils import timezone
 
 
 
@@ -16,6 +17,9 @@ class Blog(models.Model):
     pub_date = models.DateTimeField()
     body = models.TextField()
 
+    class Meta:
+        managed = False
+        db_table = 'polls_blog'
     
 def summary(self):
         return self.body[:30]
@@ -53,9 +57,9 @@ BOX_CHOICES= [
     (BOX_12,'일반히터'), (BOX_13,'GPB'), (BOX_14,'GPG'), (BOX_15, "PS"), (BOX_16, "기타")
        
     ]
- 
 
-INTEGER_CHOICES= [tuple([x,x]) for x in range(1,26)]
+
+INTEGER_CHOICES= [tuple([x,x]) for x in range(1,100)]
 
 
 TIME_1='07:30' 
@@ -169,3 +173,32 @@ class Boxtr_status(models.Model):
     class Meta:
         managed = False
         db_table = 'boxtr_status'
+
+ 
+class Rbkb_boxtr(models.Model):
+ 
+    
+    id = models.BigAutoField(primary_key=True)
+    user = models.CharField(max_length=50, blank=True, null=True)
+    pub_date = models.DateTimeField(auto_now=True)
+    dn8_tilt = models.IntegerField(blank=True, null=True, choices=INTEGER_CHOICES)
+    yf_tilt = models.IntegerField(blank=True, null=True, choices=INTEGER_CHOICES)
+    height = models.IntegerField(blank=True, null=True, choices=INTEGER_CHOICES)
+    joem = models.IntegerField(blank=True, null=True, choices=INTEGER_CHOICES)
+    pw20 = models.IntegerField(blank=True, null=True, choices=INTEGER_CHOICES)
+    pw24 = models.IntegerField(blank=True, null=True, choices=INTEGER_CHOICES)
+    pwp = models.IntegerField(blank=True, null=True, choices=INTEGER_CHOICES)
+    pu = models.IntegerField(blank=True, null=True, choices=INTEGER_CHOICES)
+    xma = models.IntegerField(blank=True, null=True, choices=INTEGER_CHOICES)
+    gbm = models.IntegerField(blank=True, null=True, choices=INTEGER_CHOICES)
+    gpg = models.IntegerField(blank=True, null=True, choices=INTEGER_CHOICES)
+    gpb = models.IntegerField(blank=True, null=True, choices=INTEGER_CHOICES)
+    ps = models.IntegerField(blank=True, null=True, choices=INTEGER_CHOICES)
+    lx2_10 = models.IntegerField(blank=True, null=True, choices=INTEGER_CHOICES)
+    lx2_12 = models.IntegerField(blank=True, null=True, choices=INTEGER_CHOICES)
+    
+     
+    class Meta:
+        managed = False
+        db_table = 'polls_rbkb_boxtr'
+    

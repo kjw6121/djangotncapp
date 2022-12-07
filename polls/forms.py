@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from django import forms
-from .models import Boxtr
+from .models import Boxtr, Rbkb_boxtr
 
 
 class CreateUserForm(UserCreationForm): # 내장 회원가입 폼을 상속받아서 확장한다.
@@ -42,16 +42,16 @@ class boxform(forms.ModelForm):
         widgets = {
             'arrival': forms.Select(attrs={'class':'form_control'}),
             'wet' : forms.Select(attrs={'class':'form_control'}),
-            'box1' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
-            'box1_qty' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
-            'box2' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
-            'box2_qty' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
-            'box3' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
-            'box3_qty' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
-            'box4' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
-            'box4_qty' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
-            'box5' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
-            'box5_qty' : forms.Select(attrs={'class':'form_control', 'style' : 'font-size : 30px'}),
+            'box1' : forms.Select(attrs={'class':'form_control'}),
+            'box1_qty' : forms.Select(attrs={'class':'form_control'}),
+            'box2' : forms.Select(attrs={'class':'form_control'}),
+            'box2_qty' : forms.Select(attrs={'class':'form_control'}),
+            'box3' : forms.Select(attrs={'class':'form_control'}),
+            'box3_qty' : forms.Select(attrs={'class':'form_control'}),
+            'box4' : forms.Select(attrs={'class':'form_control'}),
+            'box4_qty' : forms.Select(attrs={'class':'form_control'}),
+            'box5' : forms.Select(attrs={'class':'form_control'}),
+            'box5_qty' : forms.Select(attrs={'class':'form_control'}),
             
             
                                   
@@ -62,3 +62,18 @@ class boxform(forms.ModelForm):
                 if commit:
                     post.save()
                 return post
+            
+
+class rbkbboxform(forms.ModelForm):
+    class Meta:
+        model = Rbkb_boxtr
+        fields = ("dn8_tilt", "yf_tilt", "height", "joem", 
+                  "pw20", "pw24", "pwp", "pu", "xma", "gbm", "gpg", "gpb", "ps", "lx2_10", "lx2_12")
+        
+        
+        def save(self, commit=True):
+                post = Rbkb_boxtr(self.cleaned_data)
+                if commit:
+                    post.save()
+                return post
+            

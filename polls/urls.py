@@ -23,6 +23,8 @@ urlpatterns = [
     path('loading/<str:id>', loading, name='loading'),
     path('boxtrstock/', boxtrstock, name='boxtrstock'),
     path('boxtrstatus/', boxtrstatus, name='boxtrstatus'),
+    path('post_rbkb/', post_rbkb, name='post_rbkb'),
+    path('update_rbkb/', update_rbkb, name='update_rbkb'),
 
     
     

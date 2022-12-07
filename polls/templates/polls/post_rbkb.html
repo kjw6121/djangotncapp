@@ -3,8 +3,9 @@
 
 {% block content %}
 
-		<h2>상차내역입력</h2>
-
+		<h2>박스창고재고입력</h2>
+		<p>업데이트일자 :&nbsp;&nbsp;{{ rbkb_boxtr.pub_date }}</p>
+		<p>작성자 :&nbsp;&nbsp;{{ rbkb_boxtr.user }}</p>	
 <form action="" method="post">
 	{% csrf_token %}
 	<table>
