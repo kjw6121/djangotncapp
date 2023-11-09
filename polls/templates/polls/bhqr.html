@@ -12,6 +12,9 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const qrDataList = document.getElementById("qr-data-list");
+            const qrDataList = document.getElementById("qr-data-list");
+            const alarmAudio = new Audio('alarm.mp3'); // 알람 음원 파일
+
             let previousQRCode = null;
 
             var qrCode = new Html5Qrcode("qr-reader");
@@ -47,6 +50,11 @@
             function displayDifferenceMessage() {
                 // "값이 다릅니다" 팝업 메시지를 표시
                 alert("값이 다릅니다");
+
+            function playAlarmSound() {
+                    // 알람 소리 재생
+                    alarmAudio.play();
+
             }
         });
     </script>
