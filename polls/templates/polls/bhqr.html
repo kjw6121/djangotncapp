@@ -9,15 +9,19 @@
     <div id="qr-reader" style="width: 600px"></div>
     <ul id="qr-data-list"></ul>
 
+    <audio id="alarm-audio">
+        <source src="alarm.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const qrDataList = document.getElementById("qr-data-list");
-            const qrDataList = document.getElementById("qr-data-list");
-            const alarmAudio = new Audio('alarm.mp3'); // 알람 음원 파일
-
             let previousQRCode = null;
 
             var qrCode = new Html5Qrcode("qr-reader");
+
+            const alarmAudio = document.getElementById("alarm-audio"); // 알람음 오디오 요소
 
             qrCode.start(
                 { facingMode: "environment" },
@@ -51,10 +55,8 @@
                 // "값이 다릅니다" 팝업 메시지를 표시
                 alert("값이 다릅니다");
 
-            function playAlarmSound() {
-                    // 알람 소리 재생
-                    alarmAudio.play();
-
+                // 알람음 재생
+                alarmAudio.play();
             }
         });
     </script>
