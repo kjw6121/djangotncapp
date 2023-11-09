@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>QR Code Scanner with Notification</title>
+    <title>QR Code Scanner with Notification Sound</title>
     <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
 </head>
 <body>
-    <h1>QR Code Scanner with Notification</h1>
+    <h1>QR Code Scanner with Notification Sound</h1>
     <div id="qr-reader" style="width: 600px"></div>
     <ul id="qr-data-list"></ul>
 
@@ -41,11 +41,11 @@
                 // Notification API를 사용하여 알림 표시
                 if ("Notification" in window) {
                     if (Notification.permission === "granted") {
-                        new Notification(title, { body: message });
+                        const notification = new Notification(title, { body: message, sound: 'notification.mp3' });
                     } else if (Notification.permission !== "denied") {
                         Notification.requestPermission().then(function (permission) {
                             if (permission === "granted") {
-                                new Notification(title, { body: message });
+                                const notification = new Notification(title, { body: message, sound: 'notification.mp3' });
                             }
                         });
                     }
