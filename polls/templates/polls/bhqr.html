@@ -41,11 +41,11 @@
                 // Notification API를 사용하여 알림 표시
                 if ("Notification" in window) {
                     if (Notification.permission === "granted") {
-                        const notification = new Notification(title, { body: message, sound: 'notification.mp3' });
+                        const notification = new Notification(title, { body: message, sound: 'alarm.mp3' });
                     } else if (Notification.permission !== "denied") {
                         Notification.requestPermission().then(function (permission) {
                             if (permission === "granted") {
-                                const notification = new Notification(title, { body: message, sound: 'notification.mp3' });
+                                const notification = new Notification(title, { body: message, sound: 'alarm.mp3' });
                             }
                         });
                     }
