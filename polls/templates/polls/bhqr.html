@@ -9,19 +9,12 @@
     <div id="qr-reader" style="width: 600px"></div>
     <ul id="qr-data-list"></ul>
 
-    <audio id="alarm-audio">
-        <source src="alarm.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
-
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const qrDataList = document.getElementById("qr-data-list");
-            let previousQRCode = null;
+            const alarmAudio = new Audio('alarm.mp3'); // 알람 음원 파일
 
             var qrCode = new Html5Qrcode("qr-reader");
-
-            const alarmAudio = document.getElementById("alarm-audio"); // 알람음 오디오 요소
 
             qrCode.start(
                 { facingMode: "environment" },
@@ -31,13 +24,7 @@
                 (qrCodeMessage) => {
                     // QR 코드가 스캔될 때 호출되는 콜백 함수
                     addToQRDataList(qrCodeMessage);
-
-                    // 이전 스캔된 값과 현재 스캔된 값 비교
-                    if (previousQRCode !== null && previousQRCode !== qrCodeMessage) {
-                        displayDifferenceMessage();
-                    }
-
-                    previousQRCode = qrCodeMessage;
+                    playAlarmSound(); // 알람 소리 재생
                 },
                 (errorMessage) => {
                     // 오류 발생 시 호출되는 콜백 함수
@@ -51,11 +38,8 @@
                 qrDataList.appendChild(listItem);
             }
 
-            function displayDifferenceMessage() {
-                // "값이 다릅니다" 팝업 메시지를 표시
-                alert("값이 다릅니다");
-
-                // 알람음 재생
+            function playAlarmSound() {
+                // 알람 소리 재생
                 alarmAudio.play();
             }
         });
