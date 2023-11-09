@@ -26,7 +26,9 @@
                     addToQRDataList(qrCodeMessage);
 
                     // 이전 스캔된 값과 현재 스캔된 값 비교
-                    if (previousQRCode !== null && previousQRCode !== qrCodeMessage) {
+                    if (previousQRCode !== null && previousQRCode === qrCodeMessage) {
+                        displaySuccessMessage();
+                    } else {
                         displayDifferenceMessage();
                     }
 
@@ -42,6 +44,11 @@
                 const listItem = document.createElement("li");
                 listItem.textContent = data;
                 qrDataList.appendChild(listItem);
+            }
+
+            function displaySuccessMessage() {
+                // "문제없습니다. 다음 QR을 스캔하세요." 팝업 메시지를 표시
+                alert("문제없습니다. 다음 QR을 스캔하세요.");
             }
 
             function displayDifferenceMessage() {
