@@ -11,8 +11,8 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const checkButton = document.getElementById("check-button");
             const qrCodePopup = document.getElementById("qr-code-popup");
+            const checkButton = document.getElementById("check-button");
             const qrCodeInput = document.getElementById("qr-code-input");
             const popupResult = document.getElementById("popup-result");
 
@@ -26,33 +26,23 @@
                 (qrCodeMessage) => {
                     // QR 코드가 스캔될 때 호출되는 콜백 함수
                     checkButton.onclick = function () {
-                        // 팝업 창을 표시
-                        qrCodePopup.style.display = "block";
-
-                        // 확인 버튼을 클릭하면 입력값과 스캔된 QR 코드를 비교
-                        document.getElementById("confirm-button").onclick = function () {
-                            const enteredQRCode = qrCodeInput.value;
-                            if (qrCodeMessage === enteredQRCode) {
-                                displayResult("O");
-                            } else {
-                                displayResult("X");
-                            }
-                        };
-
-                        // 취소 버튼을 클릭하면 팝업 창을 닫음
-                        document.getElementById("cancel-button").onclick = function () {
-                            qrCodePopup.style.display = "none";
-                        };
+                        const enteredQRCode = qrCodeInput.value;
+                        if (qrCodeMessage === enteredQRCode) {
+                            displayResult("O");
+                        } else {
+                            displayResult("X");
+                        }
                     };
                 },
                 (errorMessage) => {
                     // 오류 발생 시 호출되는 콜백 함수
                     console.error(errorMessage);
                 }
-            });
+            );
 
             function displayResult(result) {
                 popupResult.textContent = result;
+                qrCodePopup.style.display = "block";
             }
         });
     </script>
