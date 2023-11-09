@@ -7,14 +7,11 @@
 <body>
     <h1>QR Code Scanner</h1>
     <div id="qr-reader" style="width: 600px"></div>
-    <button id="check-button">Check QR Code</button>
+    <ul id="qr-data-list"></ul>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const qrCodePopup = document.getElementById("qr-code-popup");
-            const checkButton = document.getElementById("check-button");
-            const qrCodeInput = document.getElementById("qr-code-input");
-            const popupResult = document.getElementById("popup-result");
+            const qrDataList = document.getElementById("qr-data-list");
 
             var qrCode = new Html5Qrcode("qr-reader");
 
@@ -25,14 +22,7 @@
                 },
                 (qrCodeMessage) => {
                     // QR 코드가 스캔될 때 호출되는 콜백 함수
-                    checkButton.onclick = function () {
-                        const enteredQRCode = qrCodeInput.value;
-                        if (qrCodeMessage === enteredQRCode) {
-                            displayResult("O");
-                        } else {
-                            displayResult("X");
-                        }
-                    };
+                    addToQRDataList(qrCodeMessage);
                 },
                 (errorMessage) => {
                     // 오류 발생 시 호출되는 콜백 함수
@@ -40,9 +30,10 @@
                 }
             );
 
-            function displayResult(result) {
-                popupResult.textContent = result;
-                qrCodePopup.style.display = "block";
+            function addToQRDataList(data) {
+                const listItem = document.createElement("li");
+                listItem.textContent = data;
+                qrDataList.appendChild(listItem);
             }
         });
     </script>
