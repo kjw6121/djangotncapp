@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>QR Code Scanner</title>
+    <title>QR Code Scanner with Notification</title>
     <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
 </head>
 <body>
-    <h1>QR Code Scanner</h1>
+    <h1>QR Code Scanner with Notification</h1>
     <div id="qr-reader" style="width: 600px"></div>
     <ul id="qr-data-list"></ul>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const qrDataList = document.getElementById("qr-data-list");
-            const alarmAudio = new Audio('alarm.mp3'); // 알람 음원 파일
 
             var qrCode = new Html5Qrcode("qr-reader");
 
@@ -24,7 +23,7 @@
                 (qrCodeMessage) => {
                     // QR 코드가 스캔될 때 호출되는 콜백 함수
                     addToQRDataList(qrCodeMessage);
-                    playAlarmSound(); // 알람 소리 재생
+                    showNotification("QR Code Scanned", qrCodeMessage);
                 },
                 (errorMessage) => {
                     // 오류 발생 시 호출되는 콜백 함수
@@ -38,9 +37,19 @@
                 qrDataList.appendChild(listItem);
             }
 
-            function playAlarmSound() {
-                // 알람 소리 재생
-                alarmAudio.play();
+            function showNotification(title, message) {
+                // Notification API를 사용하여 알림 표시
+                if ("Notification" in window) {
+                    if (Notification.permission === "granted") {
+                        new Notification(title, { body: message });
+                    } else if (Notification.permission !== "denied") {
+                        Notification.requestPermission().then(function (permission) {
+                            if (permission === "granted") {
+                                new Notification(title, { body: message });
+                            }
+                        });
+                    }
+                }
             }
         });
     </script>
