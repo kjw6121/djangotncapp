@@ -1,34 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Html-Qrcode Demo</title>
+    <title>QR Code Scanner</title>
     <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
 </head>
 <body>
-    <h1>testtest</h1>
+    <h1>QR Code Scanner</h1>
     <div id="qr-reader" style="width: 600px"></div>
+    <ul id="qr-data-list"></ul>
 
     <script>
-        // DOMContentLoaded 이벤트를 사용하여 JavaScript 코드 실행
         document.addEventListener("DOMContentLoaded", function () {
-            // 이곳에 JavaScript 코드를 추가
+            const qrDataList = document.getElementById("qr-data-list");
+
             var qrCode = new Html5Qrcode("qr-reader");
 
             qrCode.start(
-                { facingMode: "environment" }, // 카메라 방향 설정
+                { facingMode: "environment" },
                 {
-                    fps: 10, // 프레임 속도 설정
+                    fps: 10,
                 },
                 (qrCodeMessage) => {
                     // QR 코드가 스캔될 때 호출되는 콜백 함수
-                    alert(qrCodeMessage);
-                    qrCode.stop(); // 스캔 중지
+                    addToQRDataList(qrCodeMessage);
                 },
                 (errorMessage) => {
                     // 오류 발생 시 호출되는 콜백 함수
                     console.error(errorMessage);
                 }
             );
+
+            function addToQRDataList(data) {
+                const listItem = document.createElement("li");
+                listItem.textContent = data;
+                qrDataList.appendChild(listItem);
+            }
         });
     </script>
 </body>
