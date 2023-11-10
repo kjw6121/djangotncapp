@@ -1,0 +1,17 @@
+
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>TNC공용기관리시스템</title>
+      
+    </head>
+    <body>
+    <h1>TNC 웹시스템</h1>
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button>회원가입 신청</button>
+    </form>
+</body>
