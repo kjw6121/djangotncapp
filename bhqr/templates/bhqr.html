@@ -1,5 +1,5 @@
 {% load static %}
-{% load i18n %}
+<!-- your_template.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +10,11 @@
         /* CSS 스타일은 생략 */
     </style>
     <script src="{% static 'js/html5-qrcode.min.js' %}"></script>
+    <script>
+        // Django 템플릿 태그로부터 가져온 사용자명과 시간
+        const currentUsername = "{{ current_user }}";
+        const currentTime = "{{ current_time }}";
+    </script>
 </head>
 <body>
    
@@ -38,14 +43,10 @@
             html5QrcodeScanner.render(onScanSuccess);
 
             function onScanSuccess(qrCodeMessage) {
-                addToQRDataList(qrCodeMessage);
-
                 // 사용자명과 현재 시간 사용
-                const currentUsername = "{{ current_user }}";
-                const currentTime = "{{ current_time }}";
-
-                // 스캔 데이터에 사용자명과 시간 추가
                 const scannedData = `${currentUsername} - ${currentTime} - ${qrCodeMessage}`;
+
+                addToQRDataList(qrCodeMessage);
 
                 if (isFirstScan) {
                     // 첫 번째 스캔에서는 "문제없습니다. 다음 QR을 스캔하세요." 메시지만 표시
