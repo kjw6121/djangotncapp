@@ -6,8 +6,8 @@ from django.utils import timezone
 # Create your views here.
 
 def index(request):
-    current_user = request.user
-    current_time = timezone.now().strftime("%Y-%m-%d %H:%M:%S")
+    current_user = request.user.username
+    current_time = timezone.now()
     return render(request, 'bhqr.html', {'current_user': current_user, 'current_time': current_time})
 
 
