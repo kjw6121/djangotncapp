@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 displaySuccessMessage();
             } else {
                 // 값이 다를 경우 error.html로 리다이렉션
-                window.location.href = "{% url 'bhqr:error_page' %}";
+                window.location.href = "{% url 'bhqr:errorpage' %}";
             }
         }
 
