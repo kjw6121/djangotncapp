@@ -51,31 +51,33 @@
             const qrDataList = document.getElementById("qr-data-list");
             let previousQRCode = null;
 
-            var qrCode = new Html5Qrcode("qr-reader");
-
-            qrCode.start(
-                { facingMode: "environment" },
-                {
+            const html5QrcodeScanner = new Html5QrcodeScanner(
+                "qr-reader", 
+                { 
                     fps: 10,
-                },
-                (qrCodeMessage) => {
-                    // QR 코드가 스캔될 때 호출되는 콜백 함수
-                    addToQRDataList(qrCodeMessage);
-
-                    // 이전 스캔된 값과 현재 스캔된 값 비교
-                    if (previousQRCode !== null && previousQRCode === qrCodeMessage) {
-                        displaySuccessMessage();
-                    } else {
-                        displayDifferenceMessage();
-                    }
-
-                    previousQRCode = qrCodeMessage;
-                },
-                (errorMessage) => {
-                    // 오류 발생 시 호출되는 콜백 함수
-                    console.error(errorMessage);
+                    useBarCodeDetectorIfSupported: true,
+                    rememberLastUsedCamera: true,
+                    showTorchButtonIfSupported: true,
+                    showZoomSliderIfSupported: true,
+                    defaultZoomValueIfSupported: 2
+                    // ^ this means by default camera will load at 2x zoom.
                 }
             );
+
+            html5QrcodeScanner.render(onScanSuccess);
+
+            function onScanSuccess(qrCodeMessage) {
+                addToQRDataList(qrCodeMessage);
+
+                // 이전 스캔된 값과 현재 스캔된 값 비교
+                if (previousQRCode !== null && previousQRCode === qrCodeMessage) {
+                    displaySuccessMessage();
+                } else {
+                    displayDifferenceMessage();
+                }
+
+                previousQRCode = qrCodeMessage;
+            }
 
             function addToQRDataList(data) {
                 const listItem = document.createElement("li");
@@ -84,12 +86,10 @@
             }
 
             function displaySuccessMessage() {
-                // "문제없습니다. 다음 QR을 스캔하세요." 팝업 메시지를 표시
                 alert("문제없습니다. 다음 QR을 스캔하세요.");
             }
 
             function displayDifferenceMessage() {
-                // "값이 다릅니다" 팝업 메시지를 표시
                 alert("값이 다릅니다");
             }
         });
