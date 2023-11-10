@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,7 +39,7 @@
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
     </style>
-    <script src="html5-qrcode.min.js"></script>
+    <script src="{% static 'js/html5-qrcode.min.js' %}"></script>
 </head>
 <body>
     <h1>브러쉬홀더 트레이 확인</h1>
