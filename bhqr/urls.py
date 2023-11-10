@@ -11,5 +11,5 @@ from bhqr.views import *
 app_name = "bhqr"
 urlpatterns = [
     path('index', index, name="index"),
-    path('errorpage/', errorpage, name='errorpage'),
+    path('error_page/', error_page, name='error_page'),
 ]

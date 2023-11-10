@@ -8,5 +8,5 @@ def index(request):
     return render(request, 'bhqr.html')
 
 
-def errorpage(request):
+def error_page(request):
     return render(request, 'error.html')
