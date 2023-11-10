@@ -5,4 +5,4 @@ from django.views import generic
 
 
 def index(request):
-    return render(request, 'polls/bhqr.html')
+    return render(request, 'bhqr.html')
