@@ -2,20 +2,24 @@
 <!-- your_template.html -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Scanner</title>
-    <style>
-        /* CSS 스타일은 생략 */
-    </style>
-    <script src="{% static 'js/html5-qrcode.min.js' %}"></script>
-    <script>
-        // Django 템플릿 태그로부터 가져온 사용자명과 시간
-        const currentUsername = "{{ current_user }}";
-        const currentTime = "{{ current_time }}";
-    </script>
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>QR Code Scanner</title>
+        <style>
+            /* CSS 스타일은 생략 */
+        </style>
+        <script src="{% static 'js/html5-qrcode.min.js' %}"></script>
+        <script>
+            // Django 템플릿 태그로부터 가져온 사용자명과 시간
+            const currentUsername = "{{ current_user }}";
+            const currentTime = "{{ current_time }}";
+    
+            // 템플릿 변수 값이 제대로 전달되었는지 확인하기 위해 콘솔에 출력
+            console.log('Current Username:', currentUsername);
+            console.log('Current Time:', currentTime);
+        </script>
+    </head>
 <body>
    
     <h1>브러쉬홀더 트레이 확인</h1>
