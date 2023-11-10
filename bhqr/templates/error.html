@@ -1,11 +1,50 @@
-<!-- error.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Error Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #ff0000; /* 빨간색으로 변경 */
+        }
+
+        p {
+            text-align: center;
+            margin: 10px;
+        }
+
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #007bff; /* 파란색으로 변경 */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <h1>Error: 다른 품번의 트레이가 섞여있습니다.</h1>
-    <p>올바른 트레이로 교체후 작업진행바랍니다.</p>
+    <p>올바른 트레이로 교체 후 작업을 진행하세요.</p>
+
+    <button onclick="goBack()">뒤로 가기</button>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
 </body>
 </html>
