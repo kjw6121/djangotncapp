@@ -19,7 +19,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const qrDataList = document.getElementById("qr-data-list");
-            let previousQRCode = null;
+            let isFirstScan = true;
 
             const html5QrcodeScanner = new Html5QrcodeScanner(
                 "qr-reader", 
@@ -39,12 +39,18 @@
             function onScanSuccess(qrCodeMessage) {
                 addToQRDataList(qrCodeMessage);
 
-                // 이전 스캔된 값과 현재 스캔된 값 비교
-                if (previousQRCode !== null && previousQRCode === qrCodeMessage) {
+                if (isFirstScan) {
+                    // 첫 번째 스캔에서는 "문제없습니다. 다음 QR을 스캔하세요." 메시지만 표시
                     displaySuccessMessage();
+                    isFirstScan = false;
                 } else {
-                    // 값이 다를 경우 error.html로 리다이렉션
-                    window.location.href = "{% url 'bhqr:error_page' %}";
+                    // 이후 스캔에서는 이전 스캔된 값과 현재 스캔된 값 비교 후 처리
+                    if (previousQRCode !== null && previousQRCode === qrCodeMessage) {
+                        displaySuccessMessage();
+                    } else {
+                        // 값이 다를 경우 error.html로 리다이렉션
+                        window.location.href = "{% url 'error_page' %}";
+                    }
                 }
 
                 previousQRCode = qrCodeMessage;
