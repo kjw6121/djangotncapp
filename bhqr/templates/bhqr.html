@@ -7,37 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Scanner</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
-        }
-
-        h1 {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        #qr-reader {
-            max-width: 100%;
-            margin: 0 auto;
-            background-color: #fff;
-        }
-
-        ul {
-            list-style: none;
-            padding: 0;
-            margin: 10px;
-        }
-
-        li {
-            margin: 5px 0;
-            padding: 10px;
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-        }
+        /* CSS 스타일은 생략 */
     </style>
     <script src="{% static 'js/html5-qrcode.min.js' %}"></script>
 </head>
@@ -55,13 +25,12 @@
                 "qr-reader", 
                 { 
                     fps: 10,
-                    qrbox: 250, // 스캔 영역의 크기를 설정합니다.
+                    qrbox: 250,
                     useBarCodeDetectorIfSupported: true,
                     rememberLastUsedCamera: true,
                     showTorchButtonIfSupported: true,
                     showZoomSliderIfSupported: true,
                     defaultZoomValueIfSupported: 2
-                    // ^ this means by default camera will load at 2x zoom.
                 }
             );
 
@@ -74,7 +43,8 @@
                 if (previousQRCode !== null && previousQRCode === qrCodeMessage) {
                     displaySuccessMessage();
                 } else {
-                    displayDifferenceMessage();
+                    // 값이 다를 경우 error.html로 리다이렉션
+                    window.location.href = "{% url 'error_page' %}";
                 }
 
                 previousQRCode = qrCodeMessage;
@@ -88,10 +58,6 @@
 
             function displaySuccessMessage() {
                 alert("문제없습니다. 다음 QR을 스캔하세요.");
-            }
-
-            function displayDifferenceMessage() {
-                alert("값이 다릅니다");
             }
         });
     </script>
