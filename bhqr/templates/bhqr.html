@@ -57,7 +57,7 @@
                     const previousData = `${previousQRCode} - ${previousUsername} - ${previousTime}`;
                     const currentData = `${qrCodeMessage} - ${currentUsername} - ${currentTime}`;
 
-                    if (previousQRCode !== null && previousData === currentData) {
+                    if (previousQRCode !== null && previousData === qrCodeMessage) {
                         displaySuccessMessage();
                     } else {
                         // 값이 다를 경우 error.html로 리다이렉션
