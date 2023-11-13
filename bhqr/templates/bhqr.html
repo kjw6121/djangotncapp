@@ -1,5 +1,4 @@
 {% load static %}
-{% load i18n %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -13,10 +12,9 @@
     <script src="{% static 'js/html5-qrcode.min.js' %}"></script>
 </head>
 <body>
-   
     <h1>브러쉬홀더 트레이 확인</h1>
     <div id="qr-reader"></div>
-    <div id="qr-data-list"></div>
+    <ul id="qr-data-list"></ul>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -39,14 +37,7 @@
             html5QrcodeScanner.render(onScanSuccess);
 
             function onScanSuccess(qrCodeMessage) {
-                // Django 템플릿 변수를 사용하여 현재 사용자 정보 가져오기
-                const currentUsername = "{% if user.is_authenticated %}{{ user.username }}{% else %}Guest{% endif %}";
-
-                // JavaScript를 사용하여 현재 시간 가져오기
-                const currentTime = new Date().toLocaleString();
-
-                // 화면에 스캔된 데이터, 사용자명, 시간을 표시
-                displayScannedData(qrCodeMessage, currentUsername, currentTime);
+                addToQRDataList(qrCodeMessage);
 
                 if (isFirstScan) {
                     // 첫 번째 스캔에서는 "문제없습니다. 다음 QR을 스캔하세요." 메시지만 표시
@@ -54,30 +45,21 @@
                     isFirstScan = false;
                 } else {
                     // 이후 스캔에서는 이전 스캔된 값과 현재 스캔된 값 비교 후 처리
-                    const previousData = `${previousQRCode} - ${previousUsername} - ${previousTime}`;
-                    const currentData = `${qrCodeMessage} - ${currentUsername} - ${currentTime}`;
-
                     if (previousQRCode !== null && previousQRCode === qrCodeMessage) {
                         displaySuccessMessage();
                     } else {
                         // 값이 다를 경우 error.html로 리다이렉션
-                        window.location.href = "{% url 'bhqr:error_page' %}";
+                        window.location.href = "{% url 'error_page' %}";
                     }
                 }
 
-                // 이전 값 저장
                 previousQRCode = qrCodeMessage;
-                previousUsername = currentUsername;
-                previousTime = currentTime;
             }
 
-            function displayScannedData(qrCodeMessage, username, time) {
-                // 템플릿을 이용하여 스캔 데이터, 사용자명, 시간을 표시
-                qrDataList.innerHTML = `
-                    <p>스캔 데이터: ${qrCodeMessage}</p>
-                    <p>사용자명: ${username}</p>
-                    <p>시간: ${time}</p>
-                `;
+            function addToQRDataList(data) {
+                const listItem = document.createElement("li");
+                listItem.textContent = data;
+                qrDataList.appendChild(listItem);
             }
 
             function displaySuccessMessage() {
