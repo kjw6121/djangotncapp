@@ -46,7 +46,11 @@
 
             html5QrcodeScanner.render(onScanSuccess);
 
-            function onScanSuccess(qrCodeMessage) {
+            function onScanSuccess(qrCodeMessage) 
+                    const currentUsername = "{{ current_user }}";
+                    const currentTime = "{{ current_time }}";
+                    
+            {
                 // 사용자명과 현재 시간 사용
                 const scannedData = `${currentUsername} - ${currentTime} - ${qrCodeMessage}`;
 
