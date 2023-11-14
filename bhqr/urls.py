@@ -12,4 +12,5 @@ app_name = "bhqr"
 urlpatterns = [
     path('index', index, name="index"),
     path('error_page/', error_page, name='error_page'),
+    path('save_scan_data/', save_scan_data, name='save_scan_data'),
 ]
