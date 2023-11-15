@@ -38,6 +38,35 @@
 
             function onScanSuccess(qrCodeMessage) {
                 addToQRDataList(qrCodeMessage);
+            
+                // 데이터 전송을 위한 AJAX 요청
+                const csrfToken = "{% csrf_token %}";
+                const postData = {
+                    scan_message: qrCodeMessage,
+                    csrfmiddlewaretoken: csrfToken,
+                };
+            
+                fetch("{% url 'bhqr:save_scan_data' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": csrfToken,
+                    },
+                    body: JSON.stringify(postData),
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Data saved successfully:", data);
+                })
+                .catch(error => {
+                    console.error("Error saving data:", error);
+                });
+          
 
                 if (isFirstScan) {
                     // 첫 번째 스캔에서는 "문제없습니다. 다음 QR을 스캔하세요." 메시지만 표시
@@ -49,7 +78,7 @@
                         displaySuccessMessage();
                     } else {
                         // 값이 다를 경우 error.html로 리다이렉션
-                        saveAndRedirect(qrCodeMessage);
+                        window.location.href = "{% url 'bhqr:error_page' %}";
                     }
                 }
 
@@ -65,56 +94,7 @@
             function displaySuccessMessage() {
                 alert("문제없습니다. 다음 QR을 스캔하세요.");
             }
-
-            function saveAndRedirect(qrCodeMessage) {
-                // 데이터 전송을 위한 AJAX 요청
-                const csrfToken = getCookie('csrftoken');  // CSRF 토큰 가져오기
-                const postData = {
-                    scan_message: qrCodeMessage,
-                };
-
-                fetch("{% url 'bhqr:save_scan_data' %}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": csrfToken,
-                    },
-                    credentials: 'include',  // CSRF 토큰을 요청 헤더에 포함
-                    body: JSON.stringify(postData),
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("Data saved successfully:", data);
-                })
-                .catch(error => {
-                    console.error("Error saving data:", error);
-                    // 오류 발생 시 error.html로 리다이렉션
-                    window.location.href = "{% url 'bhqr:error_page' %}";
-                });
-            }
-
-            // CSRF 토큰을 쿠키에서 가져오는 함수
-            function getCookie(name) {
-                let cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    const cookies = document.cookie.split(';');
-                    for (let i = 0; i < cookies.length; i++) {
-                        const cookie = cookies[i].trim();
-                        // 쿠키 이름으로 시작하는 경우
-                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
-                    }
-                }
-                return cookieValue;
-            }
         });
     </script>
 </body>
-</html>
+</html> 
