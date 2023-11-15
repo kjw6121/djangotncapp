@@ -3,7 +3,8 @@ from django.views import generic
 from django.shortcuts import render
 from django.utils import timezone
 from django.http import JsonResponse
-from .models import ScanData
+from .models import ScanData, today_scandata
+from datetime import datetime, timedelta
 
 
 # Create your views here.
@@ -40,3 +41,12 @@ def save_scan_data(request):
             return JsonResponse({'status': 'error', 'message': 'Invalid data'})
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid method'})
+
+
+def today_data(request):
+        # stored procedure 호출
+    results = today_scandata.call_stored_procedure()
+
+    # 결과를 템플릿에 전달
+    context = {'results': results}
+    return render(request, 'today_data.html', context)

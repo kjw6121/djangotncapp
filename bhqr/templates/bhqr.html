@@ -13,7 +13,8 @@
     <script src="{% static 'js/html5-qrcode.min.js' %}"></script>
 </head>
 <body>
-    <h1>브러쉬홀더 트레이 확인</h1>
+    <h3>브러쉬홀더 트레이 확인</h3>
+    <div> <a onClick="window.location.reload()" style="cursor: pointer;">다시시작</a>&nbsp;&nbsp;<a href="{% url 'bhqr:today_data' %}">이력조회</a> </div>
     <div id="qr-reader"></div>
     <ul id="qr-data-list"></ul>
 
