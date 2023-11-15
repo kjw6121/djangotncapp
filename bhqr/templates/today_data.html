@@ -15,31 +15,43 @@
             color: #333;
         }
 
-        ul {
-            list-style-type: none;
-            padding: 0;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
         }
 
-        li {
-            margin-bottom: 10px;
-            padding: 10px;
+        th, td {
             border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #f9f9f9;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
         }
     </style>
 </head>
 <body>
     <h1>당일스캔이력</h1>
     <a href="{% url 'bhqr:index' %}">뒤로가기</a> </div>
-    <ul>
-        {% for result in results %}
-            <li>
-                <strong>Username:</strong> {{ result.0 }}<br>
-                <strong>Formatted Scan Time:</strong> {{ result.1 }}<br>
-                <strong>User:</strong> {{ result.2 }}
-            </li>
-        {% endfor %}
-    </ul>
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Formatted Scan Time</th>
+                <th>User</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+                <tr>
+                    <td>{{ result.0 }}</td>
+                    <td>{{ result.1 }}</td>
+                    <td>{{ result.2 }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>
