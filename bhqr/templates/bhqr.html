@@ -8,7 +8,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Scanner</title>
     <style>
-        /* CSS 스타일은 생략 */
+        /* 팝업 스타일 추가 */
+        #success-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9); /* 배경 투명도 조절 */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
     </style>
     <script src="{% static 'js/html5-qrcode.min.js' %}"></script>
 </head>
@@ -17,6 +29,10 @@
     <div> <a onClick="window.location.reload()" style="cursor: pointer;">다시시작</a>&nbsp;&nbsp;<a href="{% url 'bhqr:today_data' %}">이력조회</a> </div>
     <div id="qr-reader"></div>
     <ul id="qr-data-list"></ul>
+
+    <!-- 팝업 창 추가 -->
+    <div id="success-popup">
+        <p>문제없습니다. 다음 QR을 스캔하세요.</p>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -94,8 +110,16 @@
                 qrDataList.appendChild(listItem);
             }
 
+            
             function displaySuccessMessage() {
-                alert("문제없습니다. 다음 QR을 스캔하세요.");
+                // 팝업 창을 보이도록 설정
+                const successPopup = document.getElementById("success-popup");
+                successPopup.style.display = "block";
+
+                // 2초 후에 팝업 창을 숨김
+                setTimeout(() => {
+                    successPopup.style.display = "none";
+                }, 2000);
             }
         });
     </script>
