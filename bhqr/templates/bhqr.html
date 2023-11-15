@@ -38,9 +38,7 @@
 
             function onScanSuccess(qrCodeMessage) {
                 addToQRDataList(qrCodeMessage);
-            
-                // 데이터 전송을 위한 AJAX 요청
-                const csrfToken = "{% csrf_token %}";
+                const csrfToken = document.querySelector('input[name=csrfmiddlewaretoken]').value;
                 const postData = {
                     scan_message: qrCodeMessage,
                     csrfmiddlewaretoken: csrfToken,
@@ -49,10 +47,9 @@
                 fetch("{% url 'bhqr:save_scan_data' %}", {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": csrfToken,
+                        "Content-Type": "application/x-www-form-urlencoded",
                     },
-                    body: JSON.stringify(postData),
+                    body: new URLSearchParams(postData),
                 })
                 .then(response => {
                     if (!response.ok) {
@@ -66,8 +63,7 @@
                 .catch(error => {
                     console.error("Error saving data:", error);
                 });
-          
-
+            
                 if (isFirstScan) {
                     // 첫 번째 스캔에서는 "문제없습니다. 다음 QR을 스캔하세요." 메시지만 표시
                     displaySuccessMessage();

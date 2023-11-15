@@ -21,14 +21,19 @@ def error_page(request):
 # views.py
 
 
-@csrf_exempt  # 임시로 CSRF 보호 해제 (실제로는 안전한 방법으로 대체해야 함)
+@csrf_exempt
 def save_scan_data(request):
-    if request.method == "POST":
-        scan_message = request.POST.get("scan_message", "")
+    if request.method == 'POST':
         user = request.user if request.user.is_authenticated else None
+        scan_message = request.POST.get('scan_message')
+        
+        if user and scan_message:
+            # 스캔 데이터를 모델에 저장
+            scan_data = ScanData(user=user, scan_message=scan_message)
+            scan_data.save()
 
-        if scan_message:
-            scan_data = ScanData.objects.create(user=user, scan_message=scan_message)
-            return JsonResponse({"status": "success", "data_id": scan_data.id})
+            return JsonResponse({'status': 'success'})
         else:
-            return JsonResponse({"status": "error", "message": "Scan message is empty"})
+            return JsonResponse({'status': 'error', 'message': 'Invalid data'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid method'})
