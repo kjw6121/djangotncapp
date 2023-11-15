@@ -3,7 +3,6 @@ from django.views import generic
 from django.shortcuts import render
 from django.utils import timezone
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from .models import ScanData
 
 
@@ -22,11 +21,12 @@ def error_page(request):
 
 
 import json
+from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 def save_scan_data(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
+        data = json.loads(request.body.decode('utf-8'))
         user = request.user if request.user.is_authenticated else None
         scan_message = data.get('scan_message')
 
