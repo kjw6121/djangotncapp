@@ -30,9 +30,10 @@
     <div id="qr-reader"></div>
     <ul id="qr-data-list"></ul>
 
-    <!-- 팝업 창 추가 -->
-    <div id="success-popup">
+     <!-- 경고 팝업 창 추가 -->
+     <div id="custom-alert">
         <p>문제없습니다. 다음 QR을 스캔하세요.</p>
+    </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -111,14 +112,15 @@
             }
 
             
+            
             function displaySuccessMessage() {
-                // 팝업 창을 보이도록 설정
-                const successPopup = document.getElementById("success-popup");
-                successPopup.style.display = "block";
+                // 경고 팝업을 보이도록 설정
+                const customAlert = document.getElementById("custom-alert");
+                customAlert.style.display = "block";
 
-                // 2초 후에 팝업 창을 숨김
+                // 2초 후에 팝업을 숨김
                 setTimeout(() => {
-                    successPopup.style.display = "none";
+                    customAlert.style.display = "none";
                 }, 2000);
             }
         });
