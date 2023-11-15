@@ -21,12 +21,15 @@ def error_page(request):
 # views.py
 
 
+import json
+
 @csrf_exempt
 def save_scan_data(request):
     if request.method == 'POST':
+        data = json.loads(request.body)
         user = request.user if request.user.is_authenticated else None
-        scan_message = request.POST.get('scan_message')
-        
+        scan_message = data.get('scan_message')
+
         if user and scan_message:
             # 스캔 데이터를 모델에 저장
             scan_data = ScanData(user=user, scan_message=scan_message)
