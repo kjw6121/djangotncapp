@@ -1,13 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Template</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 10px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+    </style>
 </head>
 <body>
-    <h1>Stored Procedure Results</h1>
+    <h1>당일스캔이력</h1>
+    <a href="{% url 'bhqr:index' %}">뒤로가기</a> </div>
     <ul>
         {% for result in results %}
-            <li>{{ result }}</li>
+            <li>
+                <strong>Username:</strong> {{ result.0 }}<br>
+                <strong>Formatted Scan Time:</strong> {{ result.1 }}<br>
+                <strong>User:</strong> {{ result.2 }}
+            </li>
         {% endfor %}
     </ul>
 </body>
