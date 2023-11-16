@@ -13,7 +13,7 @@ def signup(request):
         if form.is_valid():
             form.save()
             # 게시글 목록 페이지
-            return redirect('polls:home')
+            return redirect('mysite:login')
     else:
         form = UserCreationForm()
     context = {
