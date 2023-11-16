@@ -19,7 +19,7 @@ def signup(request):
     context = {
         'form': form
     }
-    return render(request, 'polls/signup.html', context)
+    return render(request, 'signup.html', context)
 
 
 
