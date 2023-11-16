@@ -93,22 +93,6 @@ def post_update(request, id):
 
 
 
-
-# Create your views here.
-def signup(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            # 게시글 목록 페이지
-            return redirect('polls:home')
-    else:
-        form = UserCreationForm()
-    context = {
-        'form': form
-    }
-    return render(request, 'polls/signup.html', context)
-
 def post_new(request):
     
     if request.user.is_authenticated:

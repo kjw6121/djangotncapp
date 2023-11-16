@@ -15,8 +15,7 @@ urlpatterns = [
     path('detail/<str:id>', detail, name="detail"),
     path('delete/<str:id>', delete, name="delete"),
     path('login/', LoginView.as_view(template_name="polls/login.html"), name='login'),
-    path('logout/', LogoutView.as_view(), name='logout'),
-    path('signup/', signup, name='signup'),
+    path('logout/', LogoutView.as_view(), name='logout')
     path('post_new/', post_new, name='post_new'),
     path('post_update/<str:id>', post_update, name='post_update'),
     path('unloading/<str:id>', unloading, name='unloading'),
