@@ -8,7 +8,7 @@
 
 <body>
     <div style="padding:1px;">
-        <h3>
+        <h5>
             TNC 웹시스템
             &nbsp;&nbsp;&nbsp;&nbsp;
             {% if user.is_authenticated %}
@@ -18,7 +18,7 @@
                 <a href="{% url 'login' %}">로그인</a>
 
             {% endif %}
-        </h3>
+        </h5>
     </div>
             {% block content %}
             {% endblock %}

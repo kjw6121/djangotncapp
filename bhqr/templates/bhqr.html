@@ -2,7 +2,7 @@
 {% load static %}
 {% csrf_token %}
 {% block content %}
-    <h3>브러쉬홀더 트레이 확인</h3>
+    <h6>브러쉬홀더 트레이 확인</h6>
     <div> <a onClick="window.location.reload()" style="cursor: pointer;">다시시작</a>&nbsp;&nbsp;<a href="{% url 'bhqr:today_data' %}">이력조회</a> </div>
     <div id="qr-reader"></div>
     <ul id="qr-data-list"></ul>
@@ -16,7 +16,7 @@
                 "qr-reader", 
                 { 
                     fps: 10,
-                    qrbox: 250,
+                    qrbox: 150,
                     useBarCodeDetectorIfSupported: true,
                     rememberLastUsedCamera: true,
                     showTorchButtonIfSupported: true,
