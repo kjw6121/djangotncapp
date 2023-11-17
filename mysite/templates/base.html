@@ -15,12 +15,11 @@
                 {{ user }}님이 접속중입니다.
                 <a href="{% url 'mysite:logout' %}">로그아웃</a>
             {% else %}
-            <a href="{% url 'login' %}">로그인</a>
+                <a href="{% url 'login' %}">로그인</a>
 
             {% endif %}
         </h3>
     </div>
-
-    {% block content %}{% endblock %}
+            {% block content %}{% endblock %}
 </body>
 </html>
