@@ -1,27 +1,25 @@
-
-
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TNC 웹시스템</title>
-  
 </head>
 
 <body>
-    <div style="padding:1px;"> <h3>TNC 웹시스템
-    &nbsp;&nbsp;&nbsp;&nbsp;
-        {% if user.is_authenticated %}
-            {{ user }}님이 접속중입니다.
-            <a href="{% url 'logout' %}">로그아웃
-        {% else %}
-            <a href="login">로그인
-        {% endif %}</h3>
-            </div>
+    <div style="padding:1px;">
+        <h3>
+            TNC 웹시스템
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            {% if user.is_authenticated %}
+                {{ user }}님이 접속중입니다.
+                <a href="{% url 'logout' %}">로그아웃</a>
+            {% else %}
+                <a href="{% url 'login' %}">로그인</a>
+            {% endif %}
+        </h3>
+    </div>
 
-            {% block content %} 
-            {% endblock %}
-        </body>
+    {% block content %}{% endblock %}
+</body>
 </html>
-        
