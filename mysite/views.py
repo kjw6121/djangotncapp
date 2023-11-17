@@ -25,3 +25,7 @@ def signup(request):
 
 def main(request):
     return render(request, 'main.html')
+
+def your_protected_view(request):
+    if not request.user.is_authenticated:
+        return render(request, 'login.html')
