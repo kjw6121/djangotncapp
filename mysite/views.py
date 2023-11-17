@@ -29,7 +29,3 @@ def signup(request):
 @login_required(login_url='login')  # 로그인되어 있지 않을 때 리다이렉트할 URL
 def main(request):
     return render(request, 'main.html')
-
-def your_protected_view(request):
-    if not request.user.is_authenticated:
-        return render(request, 'login.html')
