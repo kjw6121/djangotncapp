@@ -8,12 +8,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Scanner</title>
     <style>
-        /* CSS 스타일은 생략 */
+        h5 {
+            display: block;
+            font-size: 1.0em;
+            margin-top: 0.01em;
+            margin-bottom: 0.01em;
+            margin-left: 0;
+            margin-right: 0;
+            font-weight: bold;
+        }
     </style>
     <script src="{% static 'js/html5-qrcode.min.js' %}"></script>
 </head>
 <body>
-    <h3>브러쉬홀더 트레이 확인</h3>
+    <div style="padding:1px;">
+        <h5>
+            브러쉬홀더 트레이 확인
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            {% if user.is_authenticated %}
+                {{ user }}님이 접속중입니다.
+                <a href="{% url 'logout' %}">로그아웃</a>
+            {% else %}
+                <a href="{% url 'login' %}">로그인</a>
+
+            {% endif %}
+        </h5>
+    </div>
     <div> <a onClick="window.location.reload()" style="cursor: pointer;">다시시작</a>&nbsp;&nbsp;<a href="{% url 'bhqr:today_data' %}">이력조회</a> </div>
     <div id="qr-reader"></div>
     <ul id="qr-data-list"></ul>
