@@ -25,16 +25,10 @@
             border: 1px solid #ccc;
             padding: 10px;
             text-align: left;
-            white-space: nowrap; /* 줄 바꿈 없이 표시 */
         }
 
         th {
             background-color: #f2f2f2;
-        }
-
-        /* 글자 크기 자동 조정을 위한 클래스 */
-        .auto-adjust {
-            font-size: 1vw; /* vw 단위를 사용하여 뷰포트 크기에 따라 크기 조정 */
         }
     </style>
 </head>
@@ -44,17 +38,17 @@
     <table>
         <thead>
             <tr>
-                <th class="auto-adjust">Username</th>
-                <th class="auto-adjust">Formatted Scan Time</th>
-                <th class="auto-adjust">User</th>
+                <th>Username</th>
+                <th>Formatted Scan Time</th>
+                <th>User</th>
             </tr>
         </thead>
         <tbody>
             {% for result in results %}
                 <tr>
-                    <td class="auto-adjust">{{ result.0 }}</td>
-                    <td class="auto-adjust">{{ result.1 }}</td>
-                    <td class="auto-adjust">{{ result.2 }}</td>
+                    <td>{{ result.0 }}</td>
+                    <td>{{ result.1 }}</td>
+                    <td>{{ result.2 }}</td>
                 </tr>
             {% endfor %}
         </tbody>
