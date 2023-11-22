@@ -5,10 +5,13 @@ from django.utils import timezone
 from django.http import JsonResponse
 from .models import ScanData, today_scandata
 from datetime import datetime, timedelta
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
 
+
+@login_required(login_url='login')  # 로그인되어 있지 않을 때 리다이렉트할 URL
 def index(request):
     current_user = request.user.username
     current_time = timezone.now()
