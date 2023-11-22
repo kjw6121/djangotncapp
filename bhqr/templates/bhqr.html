@@ -1,12 +1,23 @@
-{% extends 'base.html' %}
 {% load static %}
 {% csrf_token %}
-{% block content %}
-    <h6>브러쉬홀더 트레이 확인</h6>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
+    <style>
+        /* CSS 스타일은 생략 */
+    </style>
+    <script src="{% static 'js/html5-qrcode.min.js' %}"></script>
+</head>
+<body>
+    <h3>브러쉬홀더 트레이 확인</h3>
     <div> <a onClick="window.location.reload()" style="cursor: pointer;">다시시작</a>&nbsp;&nbsp;<a href="{% url 'bhqr:today_data' %}">이력조회</a> </div>
     <div id="qr-reader"></div>
     <ul id="qr-data-list"></ul>
-    <script src="{% static 'js/html5-qrcode.min.js' %}"></script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const qrDataList = document.getElementById("qr-data-list");
@@ -88,4 +99,5 @@
             }
         });
     </script>
-    {% endblock %}
+</body>
+</html>
