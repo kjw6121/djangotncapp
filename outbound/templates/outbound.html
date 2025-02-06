@@ -1,0 +1,97 @@
+{% extends 'baseo.html' %}
+{% block content %}
+    <div>
+        <h3>출고처리</h3>
+        <form id="barcodeForm">
+            <label for="barcode">Barcode:</label>
+            <input type="text" id="barcode" name="barcode" placeholder="Scan barcode" autofocus>
+            <button type="submit">Submit</button>
+        </form>
+        
+        <div id="result">
+            <h4>스캔된 바코드:</h4>
+            <p id="scannedText"></p>
+            <p id="matchStatus"></p> <!-- 일치 여부를 표시할 영역 -->
+        </div>
+
+        <script>
+            const barcodeInput = document.getElementById('barcode');
+            const barcodeForm = document.getElementById('barcodeForm');
+            const scannedText = document.getElementById('scannedText');
+            const matchStatus = document.getElementById('matchStatus');
+            let lastScannedValue = ''; // 첫 번째 스캔된 값
+            let secondScannedValue = ''; // 두 번째 스캔된 값
+
+            // 폼 제출 처리
+            barcodeForm.addEventListener('submit', function (event) {
+                event.preventDefault(); // 폼 제출 방지 (페이지 리로드 방지)
+                
+                if (barcodeInput.value.length > 0) {
+                    let englishOnly = barcodeInput.value.replace(/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/g, ''); // 한글 제거
+                    if (englishOnly.startsWith('30S')) {
+                        englishOnly = englishOnly.slice(3); // "30S" 제거
+                    }
+
+                    if (lastScannedValue && secondScannedValue) {
+                        return; // OK 또는 NG가 결정된 이후에는 추가 처리 방지
+                    }
+
+                    if (!lastScannedValue) {
+                        lastScannedValue = englishOnly;
+                        scannedText.textContent = lastScannedValue;
+                        matchStatus.textContent = '';
+                    } else if (!secondScannedValue) {
+                        secondScannedValue = englishOnly;
+
+                        // OK 또는 NG 판별
+                        if (lastScannedValue === secondScannedValue) {
+                            matchStatus.textContent = 'OK';
+                            matchStatus.style.color = 'green';
+
+                            // 데이터 저장 및 새로고침
+                            fetch("{% url 'outbound:save_scanned_data' %}", {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                    'X-CSRFToken': '{{ csrf_token }}' // CSRF 보호
+                                },
+                                body: new URLSearchParams({
+                                    user: '{{ user.username }}',  // 템플릿에서 로그인된 사용자명 가져오기
+                                    date: new Date().toISOString(),
+                                    name: lastScannedValue
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.status === 'success') {
+                                    setTimeout(() => {
+                                        window.location.reload(); // 새로고침
+                                    }, 500);
+                                } else {
+                                    alert(data.message); // 서버에서 반환된 에러 메시지 표시
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+                        } else {
+                            matchStatus.textContent = 'NG';
+                            matchStatus.style.color = 'red';
+                            alert('NG! 입력된 값이 일치하지 않습니다.');
+                        }
+                    }
+
+                    barcodeInput.value = ''; // 입력값 초기화
+                }
+            });
+        </script>
+    </div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+

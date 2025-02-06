@@ -1,0 +1,68 @@
+
+
+<!DOCTYPE html>
+
+{% load static %}
+{% csrf_token %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outbound</title>
+    <style>
+        h5 {
+            display: block;
+            font-size: 1.0em;
+            margin-top: 0.01em;
+            margin-bottom: 0.01em;
+            margin-left: 0;
+            margin-right: 0;
+            font-weight: bold;
+        }
+        hr{
+            border: none;
+            height: 4px;
+            background: linear-gradient(to right, red, yellow, green);
+        }
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        label {
+            display: block;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        .box1 {
+            float:left; 
+            width:200px; }
+            
+       .box2 {
+            display:inline-block; 
+            width:400px;}  
+    </style>
+</head>
+<body>
+    <div class='box1'><h5><a href="{% url 'main' %}">TNC 웹시스템</a></h5></div>
+    <div class='box2'>
+        <h5>
+            {% if user.is_authenticated %}
+                {{ user }}님이 접속중입니다.
+                <a href="{% url 'logout' %}">로그아웃</a>
+            {% else %}
+                <a href="{% url 'login' %}">로그인</a>
+
+            {% endif %}
+        </h5>
+    </div>
+    {% block content %}
+    {% endblock %}    
+
+</body>
+</html>

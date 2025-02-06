@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'polls',
     'bhqr',
-    'mysite'
+    'mysite',
+    'outbound'
 
 ]
 

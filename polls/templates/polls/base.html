@@ -5,11 +5,22 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TNC공용기관리시스템</title>
+    <style>
+        h5 {
+            display: block;
+            font-size: 1.0em;
+            margin-top: 0.01em;
+            margin-bottom: 0.01em;
+            margin-left: 0;
+            margin-right: 0;
+            font-weight: bold;
+        }
+    </style>
   
 </head>
 
 <body>
-    <div style="padding:1px;"> <h1>공용기관리시스템</a></h1>
+    <div style="padding:1px;"> <h5><a href="{% url 'main' %}">TNC 웹시스템</a></h5>
     <P>&nbsp;&nbsp;
         {% if user.is_authenticated %}
             {{ user }}님이 접속중입니다.
