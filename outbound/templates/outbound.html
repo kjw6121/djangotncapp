@@ -1,15 +1,15 @@
 {% extends 'baseo.html' %}
 {% block content %}
     <div>
-        <h3><a>출고처리</a>&nbsp;&nbsp;<a href="{% url 'outbound:today_scanned_data' %}">이력조회</a></h3>
+        <h3><a>Barcode scan</a>&nbsp;&nbsp;<a href="{% url 'outbound:today_scanned_data' %}">Log lookup</a></h3>
         <form id="barcodeForm">
-            <label for="barcode">Barcode:</label>
+            <!--<label for="barcode">Barcode:</label>  -->
             <input type="text" id="barcode" name="barcode" placeholder="Scan barcode" autofocus>
-            <button type="submit">Submit</button>
+            <!-- <button type="submit">Submit</button> -->
         </form>
         
         <div id="result">
-            <h4>스캔된 바코드:</h4>
+            <h4>Scanned data</h4>
             <p id="scannedText"></p>
             <p id="matchStatus"></p> <!-- 일치 여부를 표시할 영역 -->
         </div>

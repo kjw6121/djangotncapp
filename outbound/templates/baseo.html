@@ -46,21 +46,25 @@
        .box2 {
             display:inline-block; 
             width:400px;}  
+        body {
+            background-color: aliceblue;
+            }
     </style>
 </head>
 <body>
-    <div class='box1'><h5><a href="{% url 'main' %}">TNC 웹시스템</a></h5></div>
+    <div class='box1'><h5><a href="{% url 'main' %}">TNC Websystem</a></h5></div>
     <div class='box2'>
         <h5>
             {% if user.is_authenticated %}
-                {{ user }}님이 접속중입니다.
-                <a href="{% url 'logout' %}">로그아웃</a>
+                {{ user }} is active now.
+                <a href="{% url 'logout' %}">logout</a>
             {% else %}
-                <a href="{% url 'login' %}">로그인</a>
+                <a href="{% url 'login' %}">login</a>
 
             {% endif %}
         </h5>
     </div>
+    <hr>
     {% block content %}
     {% endblock %}    
 
