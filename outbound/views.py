@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from django.contrib.auth.decorators import login_required
 import json
 from django.utils.timezone import now  # 현재 시간 가져오기
-from .models import ob
+from .models import ob, ob_today_scandata
 from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
@@ -46,3 +46,12 @@ def save_scanned_data(request):
             return JsonResponse({'status': 'error', 'message': f'Error saving data: {str(e)}'})
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
+    
+
+def today_scanned_data(request):
+        # stored procedure 호출
+    results = ob_today_scandata.call_stored_procedure()
+
+    # 결과를 템플릿에 전달
+    context = {'results': results}
+    return render(request, 'ob_today_data.html', context)

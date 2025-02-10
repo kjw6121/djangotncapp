@@ -1,7 +1,7 @@
 {% extends 'baseo.html' %}
 {% block content %}
     <div>
-        <h3>출고처리</h3>
+        <h3><a>출고처리</a>&nbsp;&nbsp;<a href="{% url 'outbound:today_scanned_data' %}">이력조회</a></h3>
         <form id="barcodeForm">
             <label for="barcode">Barcode:</label>
             <input type="text" id="barcode" name="barcode" placeholder="Scan barcode" autofocus>
@@ -22,6 +22,14 @@
             let lastScannedValue = ''; // 첫 번째 스캔된 값
             let secondScannedValue = ''; // 두 번째 스캔된 값
 
+            // 서울 시간대의 ISO 형식을 반환하는 함수
+            function getSeoulTimeISO() {
+                const now = new Date();
+                const offset = 9 * 60 * 60 * 1000; // UTC+9 밀리초
+                const seoulTime = new Date(now.getTime() + offset);
+                return seoulTime.toISOString().replace("Z", "+09:00"); // ISO 형식으로 변환
+            }
+
             // 폼 제출 처리
             barcodeForm.addEventListener('submit', function (event) {
                 event.preventDefault(); // 폼 제출 방지 (페이지 리로드 방지)
@@ -30,6 +38,9 @@
                     let englishOnly = barcodeInput.value.replace(/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/g, ''); // 한글 제거
                     if (englishOnly.startsWith('30S')) {
                         englishOnly = englishOnly.slice(3); // "30S" 제거
+                    }
+                    else if (englishOnly.startsWith('P')) {
+                        englishOnly = englishOnly.slice(1); // "P" 제거
                     }
 
                     if (lastScannedValue && secondScannedValue) {
@@ -57,7 +68,7 @@
                                 },
                                 body: new URLSearchParams({
                                     user: '{{ user.username }}',  // 템플릿에서 로그인된 사용자명 가져오기
-                                    date: new Date().toISOString(),
+                                    date: getSeoulTimeISO(), // 서울 시간대로 ISO 형식 전달
                                     name: lastScannedValue
                                 })
                             })

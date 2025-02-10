@@ -13,4 +13,5 @@ urlpatterns = [
     path('index/', index, name='index'),
     path('mainhu/', mainhu, name='mainhu'),
     path('save_scanned_data/', save_scanned_data, name='save_scanned_data'),
+    path('today_scanned_data/', today_scanned_data, name='today_scanned_data'),
 ]
