@@ -1,26 +1,13 @@
-<<!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-    <title>OCR Result</title>
+    <title>비교 결과</title>
 </head>
 <body>
-    <h1>First Image - Detected Texts:</h1>
-    <ul>
-        {% for text in detected_text1 %}
-            <li>{{ text }}</li>
-        {% endfor %}
-    </ul>
-
-    <h1>Second Image - Detected Texts:</h1>
-    <ul>
-        {% for text in detected_text2 %}
-            <li>{{ text }}</li>
-        {% endfor %}
-    </ul>
-
-    <h2>Result: {{ result }}</h2>
-
-    </ul>
-    <a href="{% url 'image_recognition:upload_image' %}">다시촬영</a>
+    <h2>OCR 비교 결과</h2>
+    <p><strong>첫 번째 이미지 텍스트:</strong> {{ text1 }}</p>
+    <p><strong>두 번째 이미지 텍스트:</strong> {{ text2 }}</p>
+    <h3>결과: <span style="color: {% if result == 'OK' %}green{% else %}red{% endif %};">{{ result }}</span></h3>
+    <a href="{% url 'image_recognition:upload_image' %}">다시 비교하기</a>
 </body>
 </html>
