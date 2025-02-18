@@ -1,14 +1,25 @@
-<!DOCTYPE html>
-<html lang="ko">
+<<!DOCTYPE html>
+<html>
 <head>
-    <title>결과</title>
+    <title>OCR Result</title>
 </head>
 <body>
-    <h2>인식된 텍스트</h2>
+    <h1>First Image - Detected Texts:</h1>
     <ul>
-        {% for text in detected_text %}
+        {% for text in detected_text1 %}
             <li>{{ text }}</li>
         {% endfor %}
+    </ul>
+
+    <h1>Second Image - Detected Texts:</h1>
+    <ul>
+        {% for text in detected_text2 %}
+            <li>{{ text }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Result: {{ result }}</h2>
+
     </ul>
     <a href="{% url 'image_recognition:upload_image' %}">다시 촬영</a>
 </body>

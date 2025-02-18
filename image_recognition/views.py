@@ -5,8 +5,8 @@ from django.core.files.base import ContentFile
 from .models import UploadedImage
 
 def extract_text_from_image(image_path):
-    
-    client = boto3.client('rekognition', region_name='ap-northeast-2')  # 리전 추가
+    # AWS Rekognition 클라이언트를 리전 설정과 함께 생성
+    client = boto3.client('rekognition', region_name='us-west-2')  # 리전 추가
     
     with open(image_path, "rb") as image_file:
         image_bytes = image_file.read()
@@ -17,21 +17,31 @@ def extract_text_from_image(image_path):
     return detected_texts
 
 def upload_image(request):
-    if request.method == 'POST' and request.FILES.get('image'):
-        image_file = request.FILES['image']
-        file_path = default_storage.save(f'uploads/{image_file.name}', ContentFile(image_file.read()))
+    if request.method == 'POST' and request.FILES.get('image1') and request.FILES.get('image2'):
+        # 첫 번째 이미지 처리
+        image_file1 = request.FILES['image1']
+        file_path1 = default_storage.save(f'uploads/{image_file1.name}', ContentFile(image_file1.read()))
 
-        # 파일 경로 출력 (디버깅 용)
-        print(f"File path: {file_path}")
-        print(f"Full file path: {default_storage.path(file_path)}")
+        # 두 번째 이미지 처리
+        image_file2 = request.FILES['image2']
+        file_path2 = default_storage.save(f'uploads/{image_file2.name}', ContentFile(image_file2.read()))
 
+        # 첫 번째 이미지에서 텍스트 추출
+        detected_text1 = extract_text_from_image(default_storage.path(file_path1))
 
-        # AWS Rekognition OCR 실행
-        detected_text = extract_text_from_image(default_storage.path(file_path))
+        # 두 번째 이미지에서 텍스트 추출
+        detected_text2 = extract_text_from_image(default_storage.path(file_path2))
 
-        # DB 저장
-        UploadedImage.objects.create(image=file_path)
+        # 텍스트 비교
+        if set(detected_text1) == set(detected_text2):
+            result = "OK"
+        else:
+            result = "NG"
 
-        return render(request, 'result.html', {'detected_text': detected_text})
+        # DB 저장 (필요시)
+        UploadedImage.objects.create(image=file_path1)
+        UploadedImage.objects.create(image=file_path2)
+
+        return render(request, 'result.html', {'detected_text1': detected_text1, 'detected_text2': detected_text2, 'result': result})
 
     return render(request, 'upload.html')
