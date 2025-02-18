@@ -10,5 +10,5 @@ from image_recognition.views import *
 
 app_name = 'image_recognition'
 urlpatterns = [
-    path('', upload_image, name='upload_image'),
+    path('/upload_image', upload_image, name='upload_image'),
 ]
