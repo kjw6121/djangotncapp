@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'polls',
     'bhqr',
     'mysite',
-    'outbound'
+    'outbound',
+    'image_recognition',
 
 ]
 
