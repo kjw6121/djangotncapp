@@ -20,6 +20,11 @@ def upload_image(request):
         image_file = request.FILES['image']
         file_path = default_storage.save(f'uploads/{image_file.name}', ContentFile(image_file.read()))
 
+        # 파일 경로 출력 (디버깅 용)
+        print(f"File path: {file_path}")
+        print(f"Full file path: {default_storage.path(file_path)}")
+
+
         # AWS Rekognition OCR 실행
         detected_text = extract_text_from_image(default_storage.path(file_path))
 
