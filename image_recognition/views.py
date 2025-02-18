@@ -5,7 +5,7 @@ from django.core.files.base import ContentFile
 from .models import UploadedImage
 
 def extract_text_from_image(image_path):
-    # AWS Rekognition 클라이언트를 리전 설정과 함께 생성
+    # AWS Rekognition 클라이언트를 리전 설정과 함께 생성 --
     client = boto3.client('rekognition', region_name='us-west-2')  # 리전 추가
     
     with open(image_path, "rb") as image_file:
