@@ -151,3 +151,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # 로그인 성공 시 자동으로 이동할 URL
 LOGIN_REDIRECT_URL = '/main'
 LOGOUT_REDIRECT_URL = '/login'
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
