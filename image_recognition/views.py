@@ -5,7 +5,8 @@ from django.core.files.base import ContentFile
 from .models import UploadedImage
 
 def extract_text_from_image(image_path):
-    client = boto3.client('rekognition')
+    
+    client = boto3.client('rekognition', region_name='ap-northeast-2')  # 리전 추가
     
     with open(image_path, "rb") as image_file:
         image_bytes = image_file.read()
