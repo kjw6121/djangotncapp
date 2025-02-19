@@ -48,7 +48,7 @@ def upload_image(request):
         resized_image = resize_image(image_file)
 
         # 파일 저장 (메모리에서 변환된 이미지 저장)
-        file_path = default_storage.save(f'uploads/{image_file.name}', ContentFile(resized_image.read()))
+        file_path = default_storage.save(f'{image_file.name}', ContentFile(resized_image.read()))
 
         # 디버깅 로그
         print(f"File path: {file_path}")
