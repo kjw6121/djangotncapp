@@ -1,10 +1,11 @@
 import boto3
 import io
-from PIL import Image, ImageEnhance
+from PIL import Image, ImageEnhance, ImageResampling
 from django.shortcuts import render
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from .models import UploadedImage
+
 
 def resize_image(image_file, max_size=(1000, 1000)):
     """이미지를 리사이징하여 OCR 성능을 최적화"""
@@ -14,8 +15,8 @@ def resize_image(image_file, max_size=(1000, 1000)):
     enhancer = ImageEnhance.Sharpness(image)
     image = enhancer.enhance(2.0)  # 선명도를 2배로 증가
 
-    # 원본 비율 유지하면서 최대 크기 조정
-    image.thumbnail(max_size, Image.ANTIALIAS)
+    # 원본 비율 유지하면서 최대 크기 조정 (LANCZOS 사용)
+    image.thumbnail(max_size, ImageResampling.LANCZOS)
 
     # 메모리에 저장
     img_io = io.BytesIO()
@@ -24,6 +25,7 @@ def resize_image(image_file, max_size=(1000, 1000)):
     img_io.seek(0)
 
     return img_io
+
 
 def extract_text_from_image(image_path):
     """AWS Rekognition을 사용해 텍스트 인식"""
