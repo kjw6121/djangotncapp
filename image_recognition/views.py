@@ -55,7 +55,7 @@ def upload_image(request):
         print(f"Full file path: {default_storage.path(file_path)}")
 
         # AWS Rekognition OCR 실행
-        detected_text = extract_text_from_image(default_storage.path(file_path))
+        detected_text = extract_text_from_image(default_storage.path(f'uplads/{file_path}'))
 
         # 이미지 파일 삭제 (서버 용량을 줄이기 위해)
         os.remove(default_storage.path(file_path))
