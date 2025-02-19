@@ -57,8 +57,8 @@ def upload_image(request):
         # AWS Rekognition OCR 실행
         detected_text = extract_text_from_image(default_storage.path(file_path))
 
-        # 이미지 파일 삭제 (서버 용량을 줄이기 위해) path(f'uplads/{file_path}'))f'uploads/{image_file.name}'
-        # os.remove(default_storage.path(f'uploads/{image_file.name}'))
+        # 이미지 파일 삭제 (서버 용량을 줄이기 위해)
+        os.remove(default_storage.path(file_path))
 
         return render(request, 'result.html', {'detected_text': detected_text})
 
