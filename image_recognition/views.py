@@ -1,11 +1,33 @@
 import boto3
+import io
+from PIL import Image, ImageEnhance
 from django.shortcuts import render
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from .models import UploadedImage
 
+def resize_image(image_file, max_size=(1000, 1000)):
+    """이미지를 리사이징하여 OCR 성능을 최적화"""
+    image = Image.open(image_file)
+
+    # 텍스트 선명도 향상
+    enhancer = ImageEnhance.Sharpness(image)
+    image = enhancer.enhance(2.0)  # 선명도를 2배로 증가
+
+    # 원본 비율 유지하면서 최대 크기 조정
+    image.thumbnail(max_size, Image.ANTIALIAS)
+
+    # 메모리에 저장
+    img_io = io.BytesIO()
+    image_format = image.format if image.format else "JPEG"  # 포맷 확인
+    image.save(img_io, format=image_format)
+    img_io.seek(0)
+
+    return img_io
+
 def extract_text_from_image(image_path):
-    client = boto3.client('rekognition', region_name='ap-northeast-2')  # AWS 리전 설정 필요
+    """AWS Rekognition을 사용해 텍스트 인식"""
+    client = boto3.client('rekognition', region_name='ap-northeast-2')  # 리전 수정됨 ✅
 
     with open(image_path, "rb") as image_file:
         image_bytes = image_file.read()
@@ -16,38 +38,25 @@ def extract_text_from_image(image_path):
     return detected_texts
 
 def upload_image(request):
-    if request.method == 'POST':
-        # 파일이 존재하는지 확인
-        if not request.FILES.get('image1') or not request.FILES.get('image2'):
-            print("❌ 파일이 업로드되지 않았습니다.")
-            return render(request, 'upload.html', {'error': '두 개의 이미지를 업로드해주세요.'})
+    if request.method == 'POST' and request.FILES.get('image'):
+        image_file = request.FILES['image']
 
-        try:
-            # 첫 번째 이미지 처리
-            image1_file = request.FILES['image1']
-            file_path1 = default_storage.save(f'uploads/{image1_file.name}', ContentFile(image1_file.read()))
-            print(f"✅ 첫 번째 이미지 저장 완료: {file_path1}")
-            text1 = extract_text_from_image(default_storage.path(file_path1))
+        # 이미지 리사이징 적용
+        resized_image = resize_image(image_file)
 
-            # 두 번째 이미지 처리
-            image2_file = request.FILES['image2']
-            file_path2 = default_storage.save(f'uploads/{image2_file.name}', ContentFile(image2_file.read()))
-            print(f"✅ 두 번째 이미지 저장 완료: {file_path2}")
-            text2 = extract_text_from_image(default_storage.path(file_path2))
+        # 파일 저장 (메모리에서 변환된 이미지 저장)
+        file_path = default_storage.save(f'uploads/{image_file.name}', ContentFile(resized_image.read()))
 
-            # 텍스트 비교 (리스트 형태이므로 문자열로 변환하여 비교)
-            result = "OK" if " ".join(text1) == " ".join(text2) else "NG"
+        # 디버깅 로그
+        print(f"File path: {file_path}")
+        print(f"Full file path: {default_storage.path(file_path)}")
 
-            # DB 저장 (선택 사항)
-            UploadedImage.objects.create(image=file_path1)
-            UploadedImage.objects.create(image=file_path2)
+        # AWS Rekognition OCR 실행
+        detected_text = extract_text_from_image(default_storage.path(file_path))
 
-            print(f"✅ OCR 결과: {text1} vs {text2}, 결과: {result}")
+        # DB 저장
+        UploadedImage.objects.create(image=file_path)
 
-            return render(request, 'result.html', {'text1': text1, 'text2': text2, 'result': result})
-
-        except Exception as e:
-            print(f"❌ 오류 발생: {e}")
-            return render(request, 'upload.html', {'error': f'오류 발생: {str(e)}'})
+        return render(request, 'result.html', {'detected_text': detected_text})
 
     return render(request, 'upload.html')
