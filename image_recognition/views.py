@@ -8,24 +8,24 @@ from .models import UploadedImage
 from PIL import Image, ImageEnhance
 import io
 
-def resize_image(image_file, max_size=(1000, 1000)):
+#def resize_image(image_file, max_size=(1000, 1000)):
     """이미지를 리사이징하여 OCR 성능을 최적화"""
-    image = Image.open(image_file)
+ #   image = Image.open(image_file)
 
     # 텍스트 선명도 향상
-    enhancer = ImageEnhance.Sharpness(image)
-    image = enhancer.enhance(2.0)  # 선명도를 2배로 증가
+ #   enhancer = ImageEnhance.Sharpness(image)
+ #   image = enhancer.enhance(2.0)  # 선명도를 2배로 증가
 
     # 원본 비율 유지하면서 최대 크기 조정
-    image.thumbnail(max_size, Image.LANCZOS)  # 기존 Image.ANTIALIAS 대신 Image.LANCZOS 사용
+ #   image.thumbnail(max_size, Image.LANCZOS)  # 기존 Image.ANTIALIAS 대신 Image.LANCZOS 사용
 
     # 메모리에 저장
-    img_io = io.BytesIO()
-    image_format = image.format if image.format else "JPEG"  # 포맷 확인
-    image.save(img_io, format=image_format)
-    img_io.seek(0)
+ #   img_io = io.BytesIO()
+ #   image_format = image.format if image.format else "JPEG"  # 포맷 확인
+ #   image.save(img_io, format=image_format)
+ #   img_io.seek(0)
 
-    return img_io
+  #  return img_io
 
 
 def extract_text_from_image(image_path):
@@ -45,10 +45,16 @@ def upload_image(request):
         image_file = request.FILES['image']
 
         # 이미지 리사이징 적용
-        resized_image = resize_image(image_file)
+  #      resized_image = resize_image(image_file)
 
         # 파일 저장 (메모리에서 변환된 이미지 저장)
-        file_path = default_storage.save(f'{image_file.name}', ContentFile(resized_image.read()))
+        file_path = default_storage.save(f'{image_file.name}')
+
+        # 파일 저장 (메모리에서 변환된 이미지 저장)
+#        file_path = default_storage.save(f'{image_file.name}', ContentFile(resized_image.read()))
+
+
+
 
         # 디버깅 로그
         print(f"File path: {file_path}")
