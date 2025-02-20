@@ -10,13 +10,13 @@
                 <input type="file" accept="image/*" capture="camera" name="image" id="imageInput" required>
             </div>
                         
-            <script>
-                document.getElementById('uploadForm').addEventListener('submit', function() {
-                    setTimeout(() => {
-                        document.getElementById('imageInput').value = ''; // 1초 후 input 초기화
-                    }, 1000); // 1000ms = 1초
-                });
-                </script>
+        <script>
+            document.getElementById('uploadForm').addEventListener('submit', function() {
+                setTimeout(() => {
+                    document.getElementById('imageInput').value = ''; // 업로드 후 초기화
+                }, 500);
+            });
+            </script>
             
             
             <button type="submit">업로드</button>
