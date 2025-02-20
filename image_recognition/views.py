@@ -9,7 +9,7 @@ from PIL import Image, ImageEnhance
 import io
 
 #def resize_image(image_file, max_size=(1000, 1000)):
-    """이미지를 리사이징하여 OCR 성능을 최적화"""
+  #  """이미지를 리사이징하여 OCR 성능을 최적화"""
  #   image = Image.open(image_file)
 
     # 텍스트 선명도 향상
