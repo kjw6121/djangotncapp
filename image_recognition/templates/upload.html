@@ -80,11 +80,19 @@
         <h2>카메라로 사진 촬영</h2>
         <form action="{% url 'image_recognition:upload_image' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            
             <div class="form-group">
                 <label for="image">사진 업로드:</label>
-                <input type="file" accept="image/*" capture="camera" name="image" required>
+                <input type="file" accept="image/*" capture="camera" name="image" id="imageInput" required>
             </div>
+            
+            <script>
+            document.getElementById('imageInput').addEventListener('change', function(event) {
+                setTimeout(() => {
+                    this.value = '';  // 파일 선택 후 일정 시간 뒤에 입력값 초기화
+                }, 1000); // 1초 후 초기화 (업로드가 완료될 시간을 고려)
+            });
+            </script>
+            
             
             <button type="submit">업로드</button>
         </form>

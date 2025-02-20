@@ -30,7 +30,7 @@ def resize_image(image_file, max_size=(1000, 1000)):
 
 def extract_text_from_image(image_path):
     """AWS Rekognition을 사용해 텍스트 인식"""
-    client = boto3.client('rekognition', region_name='ap-northeast-2')  # 리전 수정됨 ✅
+    client = boto3.client('rekognition', region_name='ap-northeast-2')  # 리전 수정됨
 
     with open(image_path, "rb") as image_file:
         image_bytes = image_file.read()
