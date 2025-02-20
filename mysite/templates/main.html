@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
-        <div>
-                <a href="{% url 'outbound:index' %}">출고처리</a>
-                <a href="{% url 'image_recognition:upload_image' %}">이미지처리</a>
-                &nbsp;&nbsp;<a href="{% url 'polls:home' %}">공용기관리시스템</a>
-                &nbsp;&nbsp;<a href="{% url 'bhqr:index' %}">브러쉬홀더 트레이 검사</a>
-        </div>
+<div class="flex space-x-4 p-4 bg-gray-100">
+        <a href="{% url 'outbound:index' %}" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">출고처리</a>
+        <a href="{% url 'image_recognition:upload_image' %}" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">이미지처리</a>
+        <a href="{% url 'polls:home' %}" class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">공용기관리시스템</a>
+        <a href="{% url 'bhqr:index' %}" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">브러쉬홀더 트레이 검사</a>
+    </div>
+    
 {% endblock %}
