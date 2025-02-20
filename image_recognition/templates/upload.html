@@ -9,14 +9,14 @@
                 <label for="image">사진 업로드:</label>
                 <input type="file" accept="image/*" capture="camera" name="image" id="imageInput" required>
             </div>
-            
+                        
             <script>
-            document.getElementById('imageInput').addEventListener('change', function(event) {
-                setTimeout(() => {
-                    this.value = '';  // 파일 선택 후 일정 시간 뒤에 입력값 초기화
-                }, 1000); // 1초 후 초기화 (업로드가 완료될 시간을 고려)
-            });
-            </script>
+                document.getElementById('uploadForm').addEventListener('submit', function() {
+                    setTimeout(() => {
+                        document.getElementById('imageInput').value = ''; // 1초 후 input 초기화
+                    }, 1000); // 1000ms = 1초
+                });
+                </script>
             
             
             <button type="submit">업로드</button>
