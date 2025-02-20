@@ -1,85 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>결과</title>
-    <style>
-        /* 기본 스타일 */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f7f7f7;
-        }
-
-        h2 {
-            text-align: center;
-            color: #333;
-            margin-top: 20px;
-        }
-
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-        }
-
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        ul li {
-            padding: 10px;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-
-        a {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            padding: 12px;
-            background-color: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 18px;
-        }
-
-        a:hover {
-            background-color: #45a049;
-        }
-
-        /* 모바일 화면에서 스타일을 조정 */
-        @media (max-width: 768px) {
-            .container {
-                margin-top: 10px;
-                padding: 15px;
-            }
-
-            h2 {
-                font-size: 20px;
-            }
-
-            ul li {
-                font-size: 14px;
-            }
-
-            a {
-                font-size: 16px;
-            }
-        }
-    </style>
-</head>
-<body>
+{% extends 'baseo.html' %}
+{% block content %}
     <div class="container">
         <h2>인식된 텍스트</h2>
         <ul>
@@ -89,6 +10,5 @@
         </ul>
         <a href="{% url 'image_recognition:upload_image' %}">다시 촬영</a>
     </div>
-
-</body>
-</html>
+    
+{% endblock %}
