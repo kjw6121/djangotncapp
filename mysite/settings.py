@@ -155,3 +155,21 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 LOGIN_REDIRECT_URL = '/main'
 LOGOUT_REDIRECT_URL = '/login'
 
+# S3 연동을 위한 기본 설정
+INSTALLED_APPS += ['storages']
+
+# AWS 기본 설정
+AWS_ACCESS_KEY_ID = 'AKIARZSGCTWPJZOB3ZFZ'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'wms.po'
+AWS_S3_REGION_NAME = 'ap-northeast-2'  # 서울 리전 등 해당 리전으로 바꾸세요
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+
+# 파일 업로드를 S3로
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+# S3 URL 설정 (미디어 파일 접근용)
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
+
+# 권장: S3에 업로드된 파일을 public-read가 아닌 private으로 하고, presigned URL 사용하려면
+# AWS_DEFAULT_ACL = 'private'

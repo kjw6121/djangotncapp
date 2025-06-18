@@ -159,3 +159,9 @@ class PollsBlog(models.Model):
 
 # models.py
 
+# app/models.py
+
+class UploadedFile(models.Model):
+    title = models.CharField(max_length=100)
+    file = models.FileField(upload_to='uploads/')  # S3에 uploads/ 경로로 저장됨
+    uploaded_at = models.DateTimeField(auto_now_add=True)
