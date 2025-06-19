@@ -15,4 +15,5 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('signup/', signup, name='signup'),
     path('main/', main, name='main'),
+    path('accesstos3/', include('accesstos3.urls')),
 ]
