@@ -4,7 +4,8 @@ After=syslog.target
  
 [Service]
 ExecStart=/home/ubuntu/myvenv/bin/uwsgi -i /srv/djangotncapp/mysite/.config/uwsgi/mysite.ini
- 
+EnvironmentFile=/srv/djangotncapp/mysite/.env
+
 Restart=always
 KillSignal=SIGQUIT
 Type=notify
