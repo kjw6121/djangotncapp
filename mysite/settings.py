@@ -10,6 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+
+# settings.py 상단 부근에 있어야 함
+import os
+from dotenv import load_dotenv
+
+load_dotenv() # .env 파일에서 환경 변수를 로드
+
 import os
 from pathlib import Path
 
@@ -51,6 +58,8 @@ INSTALLED_APPS = [
     'bhqr',
     'mysite',
     'outbound',
+    'storages', # 여기에 추가
+    'accesstos3',
     'image_recognition',
 
 ]
@@ -155,21 +164,24 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 LOGIN_REDIRECT_URL = '/main'
 LOGOUT_REDIRECT_URL = '/login'
 
-# S3 연동을 위한 기본 설정
-INSTALLED_APPS += ['storages']
 
 # AWS 기본 설정
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
-AWS_S3_REGION_NAME = 'ap-northeast-2'  # 서울 리전 등 해당 리전으로 바꾸세요
-AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+AWS_S3_REGION_NAME = 'ap-northeast-2'
+
+# **** 이 줄을 삭제하거나 주석 처리하세요. ****
+# AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com'
+
 
 # 파일 업로드를 S3로
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # S3 URL 설정 (미디어 파일 접근용)
-MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
-
-# 권장: S3에 업로드된 파일을 public-read가 아닌 private으로 하고, presigned URL 사용하려면
-# AWS_DEFAULT_ACL = 'private'
+# 만약 S3_CUSTOM_DOMAIN을 사용하지 않는다면 MEDIA_URL도 이렇게 설정해야 합니다.
+# MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/media/'
+# 또는 django-storages의 기본 동작을 따르려면 단순히 /media/ 로 설정 후
+# S3에 접근 시 자동으로 URL이 생성되도록 할 수 있습니다.
+MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/media/' # 이 형태로 변경 권장
+# 또는 단순히 MEDIA_URL = '/media/' 로 설정하고 S3 URL 생성은 django-storages에 맡기기.
