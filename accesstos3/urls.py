@@ -7,4 +7,3 @@ urlpatterns = [
     path('download/<path:filename>/', views.download_file_from_s3, name='download_from_s3'),
 ]
     # ... 다른 URL들 ...
-]
