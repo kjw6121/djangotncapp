@@ -17,12 +17,6 @@ def upload_file_from_access(request):
         if request.body:
             file_name = request.META.get('HTTP_X_FILENAME', 'uploaded_from_access.bin') # 커스텀 헤더로 파일 이름 받기
 
-
-            # --- 디버깅을 위한 추가 코드 ---
-            logger.info(f"Received file_name from Access: '{file_name}'")
-            # --- 디버깅을 위한 추가 코드 끝 ---
-
-
             content_type = request.META.get('CONTENT_TYPE', 'application/octet-stream')
 
             try:
