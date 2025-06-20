@@ -1,100 +1,147 @@
 # your_app/views.py
-from django.views.decorators.csrf import csrf_exempt # CSRF 보호 비활성화 (보안 주의!)
-from django.http import JsonResponse, HttpResponseBadRequest, Http404
-from django.core.files.base import ContentFile
-from django.core.files.storage import default_storage
+
+# ================================================================
+# 1. 필요한 모듈 임포트
+# ================================================================
 import logging
-from django.shortcuts import render
+import mimetypes # 파일 MIME 타입을 추론하기 위함
+import uuid # 파일 업로드 시 UUID 생성을 위함 (옵션, 한글 깨짐 방지용)
+from urllib.parse import quote # 한글 파일명 URL 인코딩을 위함
 
+from django.http import JsonResponse, HttpResponseBadRequest, Http404, HttpResponse
+from django.views.decorators.csrf import csrf_exempt # CSRF 보호 비활성화 (보안 주의!)
+from django.core.files.base import ContentFile
+from storages.backends.s3boto3 import S3Boto3Storage # django-storages S3 백엔드 사용
+
+# Django 모델을 사용한다면:
+# from .models import UploadedFile # models.py에 정의된 UploadedFile 모델을 가정
+
+
+# ================================================================
+# 2. 로거 및 스토리지 객체 초기화 (파일 상단에 한 번만)
+# ================================================================
 logger = logging.getLogger(__name__)
+default_storage = S3Boto3Storage() # S3Boto3Storage를 default_storage로 사용
 
+
+# ================================================================
+# 3. 파일 업로드 뷰 (Access -> Django -> S3)
+#    - X-Filename 헤더로 파일명 수신
+#    - 한글 파일명 깨짐 방지를 위해 S3에는 UUID 기반의 영문 파일명으로 저장 권장
+# ================================================================
 @csrf_exempt # Access에서 POST 요청 시 CSRF 토큰을 보내기 어려우므로 일시적으로 비활성화
 def upload_file_from_access(request):
     if request.method == 'POST':
-        # Access에서 보낸 파일 데이터를 처리
-        # Access VBA에서 어떻게 데이터를 보내는지에 따라 이 부분은 달라질 수 있습니다.
-        # 예시: 파일 내용을 raw body로 보낸 경우
         if request.body:
-            file_name = request.META.get('HTTP_X_FILENAME', 'uploaded_from_access.bin') # 커스텀 헤더로 파일 이름 받기
+            # Access에서 보낸 X-Filename 헤더 값 가져오기
+            raw_filename_from_access = request.META.get('HTTP_X_FILENAME', 'uploaded_from_access.bin')
+            
+            # Access VBA에서 한글을 Latin-1으로 인코딩하여 보낼 수 있으므로, UTF-8로 디코딩 시도
+            processed_original_filename = raw_filename_from_access
+            try:
+                processed_original_filename = raw_filename_from_access.encode('iso-8859-1').decode('utf-8')
+            except (UnicodeEncodeError, UnicodeDecodeError):
+                logger.warning(f"Filename decoding from iso-8859-1 to utf-8 failed for: '{raw_filename_from_access}'. Using raw name.")
+            
+            logger.info(f"Raw filename from Access (X-Filename header): '{raw_filename_from_access}'")
+            logger.info(f"Processed (potentially decoded) original filename: '{processed_original_filename}'")
 
-            content_type = request.META.get('CONTENT_TYPE', 'application/octet-stream')
+            # S3에 저장할 새로운 영문 파일명 (UUID 기반) 생성
+            # 이것이 핵심: 한글 깨짐 문제 방지 및 S3 파일명 관리 용이
+            file_extension = processed_original_filename.split('.')[-1] if '.' in processed_original_filename else ''
+            s3_storage_filename = f"{uuid.uuid4()}.{file_extension}" 
+            
+            logger.info(f"Generated S3 storage filename (UUID-based): '{s3_storage_filename}'")
 
             try:
-                # ContentFile로 래핑하여 default_storage.save()에 전달
-                file_path_on_s3 = default_storage.save(file_name, ContentFile(request.body, name=file_name))
-                logger.info(f"File '{file_name}' uploaded to S3: {file_path_on_s3}")
-                return JsonResponse({'status': 'success', 's3_path': file_path_on_s3})
+                # S3에 파일 저장 시 UUID 기반의 영문 파일명 사용
+                file_path_on_s3 = default_storage.save(s3_storage_filename, ContentFile(request.body, name=s3_storage_filename))
+                
+                logger.info(f"File '{s3_storage_filename}' uploaded to S3: {file_path_on_s3}")
+                
+                # (권장) 원본 한글 파일명과 S3에 저장된 영문 파일명을 데이터베이스에 매핑하여 저장
+                # 예시:
+                # try:
+                #     UploadedFile.objects.create(
+                #         original_filename=processed_original_filename,
+                #         s3_filename=s3_storage_filename,
+                #         s3_path=file_path_on_s3
+                #     )
+                #     logger.info(f"File metadata saved: {processed_original_filename} -> {s3_storage_filename}")
+                # except Exception as db_e:
+                #     logger.error(f"Failed to save file metadata: {db_e}", exc_info=True)
+
+
+                return JsonResponse({
+                    'status': 'success',
+                    's3_path': file_path_on_s3,
+                    'original_filename_received': processed_original_filename # Access에 확인용으로 반환
+                })
             except Exception as e:
-                logger.error(f"Error uploading file to S3: {e}")
+                logger.error(f"Error uploading file to S3: {e}", exc_info=True)
                 return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
         else:
             return HttpResponseBadRequest("No file data received.")
     else:
         return HttpResponseBadRequest("Only POST requests are allowed.")
-# Create your views here.
 
 
-import mimetypes # 파일 MIME 타입을 추론하기 위함
-import os # 파일명에서 기본 이름과 확장자를 분리하기 위함
-from storages.backends.s3boto3 import S3Boto3Storage
-
-default_storage = S3Boto3Storage()
-logger = logging.getLogger(__name__)
-
-# 기존 upload_file_from_access 함수는 그대로 둡니다.
-
+# ================================================================
+# 4. 파일 다운로드 뷰 (Access -> Django -> S3)
+#    - URL 경로에서 파일명 수신
+#    - S3에서 파일을 읽어 HTTP 응답으로 스트리밍
+# ================================================================
 @csrf_exempt
 def download_file_from_s3(request, filename): # URL에서 filename을 인자로 받습니다.
-    # S3에 저장된 실제 파일명은 인코딩되지 않은 형태로 와야 합니다.
-    # Access VBA에서 X-Filename 헤더를 보낼 때처럼 URL 인코딩 문제가 있을 수 있으므로
-    # URL에서 받은 filename이 이미 깨진 한글이라면 여기서 다시 디코딩 시도 필요.
-    # 하지만 S3에 UUID로 저장했다면, filename은 영문 UUID일 것이므로 이 과정은 필요 없습니다.
-    
-    # 만약 Access에서 넘어온 filename이 URL 인코딩되어 있다면, 여기서 디코딩해야 합니다.
-    # from urllib.parse import unquote
-    # s3_actual_filename = unquote(filename) # URL 디코딩
-    s3_actual_filename = filename # S3에 저장된 파일명 (UUID_파일명.확장자 형태라고 가정)
-
+    # Access VBA에서 넘겨받은 filename (예: RE10084.pdf)은 S3에 저장된 실제 영문 파일명으로 가정
+    s3_actual_filename = filename 
 
     logger.info(f"Attempting to download file from S3: '{s3_actual_filename}'")
 
+    # 파일이 S3에 존재하는지 확인
     if not default_storage.exists(s3_actual_filename):
         logger.error(f"File not found on S3: '{s3_actual_filename}'")
-        raise Http404("File not found.")
+        raise Http404(f"File '{s3_actual_filename}' not found.") 
 
     try:
-        # S3에서 파일 열기
-        with default_storage.open(s3_actual_filename, 'rb') as s3_file:
-            # MIME 타입 추론 (파일 확장자를 기반으로)
-            mime_type, _ = mimetypes.guess_type(s3_actual_filename)
-            if not mime_type:
-                mime_type = 'application/octet-stream' # 기본 바이너리 타입
+        # S3에서 파일 열기 (s3_file_object는 스트리밍 가능한 파일 객체)
+        s3_file_object = default_storage.open(s3_actual_filename, 'rb')
 
-            # HTTP 응답 생성
-            response = HttpResponse(s3_file.read(), content_type=mime_type)
-            
-            # 다운로드 파일명 설정 (Access에서 받아온 원본 한글 파일명으로 설정)
-            # 만약 DB에 원본 파일명이 저장되어 있다면, 그 이름을 사용합니다.
-            # 예시:
-            # try:
-            #     file_meta = UploadedFile.objects.get(s3_filename=s3_actual_filename)
-            #     download_name = file_meta.original_filename # DB에 저장된 원본 한글 파일명
-            # except UploadedFile.DoesNotExist:
-            #     download_name = s3_actual_filename # DB에 없으면 S3 실제 파일명 사용
-            download_name = s3_actual_filename # 현재는 S3 실제 파일명으로 다운로드 (영문)
+        # MIME 타입 추론
+        mime_type, _ = mimetypes.guess_type(s3_actual_filename)
+        if not mime_type:
+            mime_type = 'application/octet-stream' # 기본 바이너리 타입
 
-            # 한글 파일명 지원을 위해 인코딩 필요
-            # from urllib.parse import quote
-            # encoded_download_name = quote(download_name.encode('utf-8')) # UTF-8로 인코딩 후 URL 쿼트
+        # HTTP 응답 생성: S3 파일 객체를 직접 응답으로 전달 (메모리 효율적)
+        response = HttpResponse(s3_file_object, content_type=mime_type)
+        
+        # 다운로드될 파일명 설정
+        # (만약 DB에 원본 한글 파일명이 저장되어 있다면, 그 이름을 사용하도록 수정)
+        download_name_for_client = s3_actual_filename # 기본적으로 S3 파일명 사용
+        
+        # 예시: DB에서 원본 한글 파일명 가져와 Content-Disposition에 사용
+        # try:
+        #     file_meta = UploadedFile.objects.get(s3_filename=s3_actual_filename)
+        #     download_name_for_client = file_meta.original_filename # DB에 저장된 원본 한글 파일명
+        # except UploadedFile.DoesNotExist:
+        #     logger.warning(f"Metadata not found for S3 file: '{s3_actual_filename}'. Using S3 filename for download.")
+        # except Exception as db_e:
+        #     logger.error(f"Error retrieving metadata for {s3_actual_filename}: {db_e}", exc_info=True)
+        #     logger.warning("Falling back to S3 filename for Content-Disposition.")
 
-            # Content-Disposition 헤더 설정: 파일을 다운로드하도록 브라우저에 지시
-            # filename*=UTF-8''filename.ext 구문은 RFC 6266에 따라 한글 파일명을 지원
-            response['Content-Disposition'] = f"attachment; filename*=UTF-8''{download_name}"
-            # response['Content-Disposition'] = f"attachment; filename=\"{encoded_download_name}\"" # 구식 브라우저 호환
 
-            logger.info(f"Successfully streamed file '{s3_actual_filename}' for download.")
-            return response
+        # Content-Disposition 헤더 설정: 파일을 다운로드하도록 브라우저에 지시
+        # 한글 파일명 지원을 위해 RFC 6266 (filename*=UTF-8'') 형식 사용
+        # download_name_for_client가 한글을 포함할 수 있다면 quote 처리
+        response['Content-Disposition'] = f"attachment; filename*=UTF-8''{quote(download_name_for_client.encode('utf-8'))}"
+        # 만약 순수 영문 파일명이라면 아래처럼 간단하게도 가능:
+        # response['Content-Disposition'] = f"attachment; filename=\"{download_name_for_client}\""
+
+
+        logger.info(f"Successfully streamed file '{s3_actual_filename}' for download (Download name: '{download_name_for_client}').")
+        return response
 
     except Exception as e:
-        logger.error(f"Error streaming file from S3 '{s3_actual_filename}': {e}")
-        return HttpResponse(f"Error downloading file: {e}", status=500)
+        logger.error(f"Error streaming file from S3 '{s3_actual_filename}': {e}", exc_info=True)
+        # 사용자에게 상세한 에러 메시지를 노출하지 않도록 일반적인 메시지 반환
+        return HttpResponse("파일을 다운로드하는 중 오류가 발생했습니다. 서버 로그를 확인해주세요.", status=500)
