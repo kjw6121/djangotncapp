@@ -185,3 +185,4 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 # S3에 접근 시 자동으로 URL이 생성되도록 할 수 있습니다.
 MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/media/' # 이 형태로 변경 권장
 # 또는 단순히 MEDIA_URL = '/media/' 로 설정하고 S3 URL 생성은 django-storages에 맡기기.
+AWS_S3_ENCODING = 'utf-8'
