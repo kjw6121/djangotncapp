@@ -13,8 +13,11 @@ db.sqlite3 # SQLite 데이터베이스 파일
 # Media and collected static files
 # collectstatic 명령으로 생성되는 정적 파일 루트 디렉토리를 무시합니다.
 # settings.py의 STATIC_ROOT 설정과 일치해야 합니다.
-/static_root/ # 예시: STATIC_ROOT = BASE_DIR / 'static_root'
-/media/       # 사용자 업로드 파일 (settings.py의 MEDIA_ROOT 설정)
+
+# Django collected static files and admin static files
+/static_root/
+/static/admin/
+/media/       
 
 # Environment variables
 .env
@@ -40,6 +43,13 @@ logs/  # 특정 로그 디렉토리가 있다면
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+
+# --- 배포 관련 설정 파일 (이 부분이 중요!) ---
+# uWSGI 설정 파일 (프로젝트 내에 있다면)
+/mysite/.config/uwsgi/mysite.ini
+# Nginx 설정 파일 (프로젝트 내에 있다면)
+/mysite/.config/nginx/nginx.conf
 
 # Deployment-specific configuration (서버마다 다를 수 있는 설정 파일)
 # 프로젝트 내에 직접 저장하는 경우 Git으로 관리하지 않는 것이 좋음

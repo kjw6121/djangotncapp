@@ -4,6 +4,7 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 import logging
+from django.shortcuts import render
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,5 @@ def upload_file_from_access(request):
         else:
             return HttpResponseBadRequest("No file data received.")
     else:
-        return HttpResponseBadRequest("Only POST requests are allowed.")from django.shortcuts import render
-
+        return HttpResponseBadRequest("Only POST requests are allowed.")
 # Create your views here.
