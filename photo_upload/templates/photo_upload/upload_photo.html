@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사진 촬영 및 S3 업로드</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; background-color: #f4f4f4; }
+        h1 { color: #333; }
+        #video-container, #photo-container { margin: 20px auto; border: 1px solid #ccc; max-width: 600px; background-color: #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        video, canvas, img { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+        button { padding: 10px 20px; font-size: 16px; margin: 10px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 5px; }
+        button:hover { background-color: #0056b3; }
+        #message { margin-top: 20px; font-weight: bold; color: green; }
+        .error { color: red; }
+        #file-input { display: none; } /* 숨겨진 파일 입력 필드 */
+        .button-group { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>사진 촬영 및 S3 업로드</h1>
+    <p>저장될 파일명: <strong>{{ filename }}</strong></p>
+
+    <div id="video-container">
+        <video id="video" autoplay playsinline></video>
+    </div>
+
+    <div id="photo-container" style="display:none;">
+        <canvas id="canvas" style="display:none;"></canvas>
+        <img id="photo" alt="촬영된 사진">
+    </div>
+
+    <div class="button-group">
+        <button id="startCameraButton">카메라 시작</button>
+        <button id="takePhotoButton" style="display:none;">사진 촬영</button>
+        <button id="retakeButton" style="display:none;">다시 촬영</button>
+        <label for="file-input" id="chooseFileButton" style="display:none;">
+            <button type="button">갤러리에서 선택</button>
+        </label>
+        <input type="file" id="file-input" accept="image/*">
+        <button id="uploadButton" style="display:none;">S3 업로드</button>
+    </div>
+    
+    <div id="message"></div>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const photo = document.getElementById('photo');
+        const startCameraButton = document.getElementById('startCameraButton');
+        const takePhotoButton = document.getElementById('takePhotoButton');
+        const retakeButton = document.getElementById('retakeButton');
+        const uploadButton = document.getElementById('uploadButton');
+        const messageDiv = document.getElementById('message');
+        const fileInput = document.getElementById('file-input');
+        const chooseFileButton = document.getElementById('chooseFileButton');
+        const videoContainer = document.getElementById('video-container');
+        const photoContainer = document.getElementById('photo-container');
+
+        let stream;
+        let currentImageBlob = null;
+        const filename = "{{ filename }}"; // Django 템플릿 변수 (Access에서 전달받은 파일명)
+        const uploadUrl = "{{ upload_url }}"; // Django 템플릿 변수 (POST 요청 보낼 주소)
+
+        // 카메라 시작 함수
+        async function startCamera() {
+            try {
+                // 기존 스트림이 있다면 중지
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'environment', // 후면 카메라 우선
+                        width: { ideal: 1280 }, // 해상도 조절 (옵션)
+                        height: { ideal: 720 }
+                    } 
+                }); 
+                video.srcObject = stream;
+                videoContainer.style.display = 'block';
+                photoContainer.style.display = 'none';
+                startCameraButton.style.display = 'none';
+                takePhotoButton.style.display = 'inline-block';
+                chooseFileButton.style.display = 'inline-block'; 
+                retakeButton.style.display = 'none';
+                uploadButton.style.display = 'none';
+                messageDiv.textContent = '';
+                messageDiv.classList.remove('error');
+            } catch (err) {
+                console.error("카메라 접근 오류: ", err);
+                messageDiv.textContent = "카메라 접근 권한이 없거나 카메라를 사용할 수 없습니다. (오류: " + err.name + ")";
+                messageDiv.classList.add('error');
+                startCameraButton.style.display = 'inline-block'; 
+                chooseFileButton.style.display = 'inline-block'; 
+            }
+        }
+
+        // 사진 촬영 함수
+        takePhotoButton.addEventListener('click', () => {
+            if (!stream) {
+                messageDiv.textContent = "먼저 카메라를 시작하세요.";
+                messageDiv.classList.add('error');
+                return;
+            }
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            canvas.toBlob((blob) => {
+                currentImageBlob = blob;
+                photo.src = URL.createObjectURL(blob); // 촬영된 사진 미리보기
+                
+                // UI 업데이트
+                videoContainer.style.display = 'none';
+                photoContainer.style.display = 'block';
+                takePhotoButton.style.display = 'none';
+                chooseFileButton.style.display = 'none';
+                retakeButton.style.display = 'inline-block';
+                uploadButton.style.display = 'inline-block';
+                
+                if (stream) { // 스트림 중지 (리소스 해제)
+                    stream.getTracks().forEach(track => track.stop());
+                    stream = null;
+                }
+            }, 'image/jpeg', 0.9); // JPEG 포맷, 품질 90%
+        });
+
+        // 다시 촬영 버튼 (현재 촬영된 사진을 버리고 카메라 재시작)
+        retakeButton.addEventListener('click', () => {
+            currentImageBlob = null;
+            photo.src = ""; // 미리보기 이미지 초기화
+            startCamera(); 
+        });
+
+        // 갤러리에서 파일 선택
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                currentImageBlob = file;
+                photo.src = URL.createObjectURL(file);
+                
+                // UI 업데이트
+                videoContainer.style.display = 'none';
+                photoContainer.style.display = 'block';
+                takePhotoButton.style.display = 'none';
+                chooseFileButton.style.display = 'none';
+                retakeButton.style.display = 'inline-block';
+                uploadButton.style.display = 'inline-block';
+                
+                if (stream) { // 카메라 스트림 중지
+                    stream.getTracks().forEach(track => track.stop());
+                    stream = null;
+                }
+                messageDiv.textContent = '';
+                messageDiv.classList.remove('error');
+            } else {
+                messageDiv.textContent = "이미지 파일을 선택해주세요.";
+                messageDiv.classList.add('error');
+            }
+        });
+
+        // S3 업로드 함수
+        uploadButton.addEventListener('click', async () => {
+            if (!currentImageBlob) {
+                messageDiv.textContent = "촬영되거나 선택된 사진이 없습니다.";
+                messageDiv.classList.add('error');
+                return;
+            }
+
+            messageDiv.textContent = "업로드 중...";
+            messageDiv.classList.remove('error');
+
+            const formData = new FormData();
+            // 'photo'는 Django 뷰에서 request.FILES.get('photo')로 받음
+            // filename은 Blob의 기본 filename이 되거나, FormData.append의 세 번째 인자로 지정 가능
+            formData.append('photo', currentImageBlob, filename); 
+            // 'filename'은 Django 뷰에서 request.POST.get('filename')으로 받음 (S3 저장명)
+            formData.append('filename', filename); 
+
+            try {
+                const response = await fetch(uploadUrl, {
+                    method: 'POST',
+                    body: formData,
+                    // 'Content-Type': 'multipart/form-data'는 FormData 사용 시 자동으로 설정되므로 명시할 필요 없음
+                });
+
+                const result = await response.json(); // 서버 응답을 JSON으로 파싱
+
+                if (response.ok) { // HTTP 상태 코드가 2xx (성공)인 경우
+                    messageDiv.textContent = `업로드 성공! 파일명: ${result.filename_uploaded}`;
+                    messageDiv.classList.remove('error');
+                    
+                    // 성공 후 UI 초기화
+                    takePhotoButton.style.display = 'none';
+                    retakeButton.style.display = 'none';
+                    uploadButton.style.display = 'none';
+                    startCameraButton.style.display = 'inline-block';
+                    chooseFileButton.style.display = 'inline-block';
+                    photoContainer.style.display = 'none';
+                    videoContainer.style.display = 'none'; // 비디오 컨테이너도 숨김
+                    currentImageBlob = null;
+                    photo.src = ""; // 미리보기 이미지 초기화
+
+                } else { // 서버에서 오류 응답 (예: 4xx, 5xx)
+                    messageDiv.textContent = `업로드 실패: ${result.message || '알 수 없는 오류'}`;
+                    messageDiv.classList.add('error');
+                }
+            } catch (error) { // 네트워크 오류 등
+                console.error("업로드 오류:", error);
+                messageDiv.textContent = `네트워크 오류 또는 서버 통신 실패: ${error.message}`;
+                messageDiv.classList.add('error');
+            }
+        });
+
+        // 페이지 로드 시 초기 버튼 상태 설정
+        window.onload = () => {
+            startCameraButton.style.display = 'inline-block';
+            chooseFileButton.style.display = 'inline-block';
+            videoContainer.style.display = 'none'; // 초기에는 비디오 숨김
+            photoContainer.style.display = 'none'; // 초기에는 사진 미리보기 숨김
+        };
+
+        // 카메라 시작 버튼 이벤트 리스너
+        startCameraButton.addEventListener('click', startCamera);
+    </script>
+</body>
+</html>

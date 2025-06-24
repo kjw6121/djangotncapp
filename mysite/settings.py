@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'accesstos3',
     'image_recognition',
     'qrcode_api',
+    'photo_upload',
 
 ]
 

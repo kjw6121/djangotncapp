@@ -17,4 +17,5 @@ urlpatterns = [
     path('main/', main, name='main'),
     path('accesstos3/', include('accesstos3.urls')),
     path('qr/', include('qrcode_api.urls')), 
+    path('', include('photo_upload.urls')),
 ]
