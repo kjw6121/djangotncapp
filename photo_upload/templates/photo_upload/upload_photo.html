@@ -101,8 +101,8 @@
                 stream = await navigator.mediaDevices.getUserMedia({ 
                     video: { 
                         facingMode: 'environment',
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
+                        width: { ideal: 1920 },    // 너비를 1920 픽셀로 요청
+                        height: { ideal: 1080 }   // 높이를 1080 픽셀로 요청
                     } 
                 }); 
                 video.srcObject = stream;
