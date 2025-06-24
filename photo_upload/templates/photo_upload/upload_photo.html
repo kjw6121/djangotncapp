@@ -160,31 +160,77 @@
             startCamera(); 
         });
 
-        // 갤러리에서 파일 선택 (input change 이벤트)
-        fileInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file && file.type.startsWith('image/')) {
-                currentImageBlob = file;
-                photo.src = URL.createObjectURL(file);
-                
-                videoContainer.style.display = 'none';
-                photoContainer.style.display = 'block';
-                takePhotoButton.style.display = 'none';
-                chooseFileButton.style.display = 'none'; // '갤러리에서 선택' 버튼 숨김
-                retakeButton.style.display = 'inline-block';
-                uploadButton.style.display = 'inline-block';
-                
-                if (stream) {
-                    stream.getTracks().forEach(track => track.stop());
-                    stream = null;
+// **추가 또는 수정: 최대 해상도 설정**
+const MAX_IMAGE_WIDTH = 1000;  // 원하는 최대 너비 (예: 1000px)
+const MAX_IMAGE_HEIGHT = 1000; // 원하는 최대 높이 (예: 1000px)
+
+// 갤러리에서 파일 선택 (input change 이벤트)
+fileInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+
+    if (file && file.type.startsWith('image/')) {
+        // 파일을 읽기 위한 FileReader
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                let width = img.width;
+                let height = img.height;
+
+                // 이미지가 설정된 최대 크기를 초과하는 경우에만 리사이징
+                if (width > MAX_IMAGE_WIDTH || height > MAX_IMAGE_HEIGHT) {
+                    const ratio = Math.min(MAX_IMAGE_WIDTH / width, MAX_IMAGE_HEIGHT / height);
+                    width = Math.round(width * ratio);
+                    height = Math.round(height * ratio);
                 }
-                messageDiv.textContent = '';
-                messageDiv.classList.remove('error');
-            } else {
-                messageDiv.textContent = "이미지 파일을 선택해주세요.";
-                messageDiv.classList.add('error');
-            }
-        });
+
+                // Canvas 생성 및 이미지 그리기
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = width;
+                canvas.height = height;
+                
+                // 이미지 회전 처리 (선택 사항: 모바일 사진의 Exif 정보에 따라 회전이 필요할 수 있습니다)
+                // 만약 사진이 특정 방향으로 돌아가는 문제가 발생하면 이 부분 고려
+                /*
+                // 예시: ExifOrientation.js 같은 라이브러리를 사용하거나 직접 구현
+                // ExifOrientation.correct(img, width, height, ctx, callbackFunction);
+                */
+
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // 리사이징된 이미지를 Blob으로 변환
+                canvas.toBlob((blob) => {
+                    currentImageBlob = blob;
+                    photo.src = URL.createObjectURL(blob); // 리사이징된 사진 미리보기
+                    
+                    // UI 업데이트 (기존과 동일)
+                    videoContainer.style.display = 'none';
+                    photoContainer.style.display = 'block';
+                    takePhotoButton.style.display = 'none';
+                    chooseFileButton.style.display = 'none';
+                    retakeButton.style.display = 'inline-block';
+                    uploadButton.style.display = 'inline-block';
+                    
+                    if (stream) { // 카메라 스트림 중지
+                        stream.getTracks().forEach(track => track.stop());
+                        stream = null;
+                    }
+                    messageDiv.textContent = '';
+                    messageDiv.classList.remove('error');
+
+                }, file.type, 0.9); // 원본 파일 형식 유지, 품질 90%로 압축
+
+            };
+            img.src = e.target.result; // FileReader로 읽은 데이터를 이미지 src로 설정
+        };
+        reader.readAsDataURL(file); // 파일을 Data URL로 읽기
+
+    } else {
+        messageDiv.textContent = "이미지 파일을 선택해주세요.";
+        messageDiv.classList.add('error');
+    }
+});
 
         // S3 업로드 함수
         uploadButton.addEventListener('click', async () => {
