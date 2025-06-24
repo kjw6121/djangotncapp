@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'storages', # 여기에 추가
     'accesstos3',
     'image_recognition',
+    'qrcode_api',
 
 ]
 
