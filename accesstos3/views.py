@@ -1,35 +1,35 @@
 # your_app/views.py
 
 # ================================================================
-# 1. 필요한 모듈 임포트
+# 1. 필요한 모듈 임포트 (기존 import 문은 그대로 유지)
 # ================================================================
 import logging
-import mimetypes # 파일 MIME 타입을 추론하기 위함
-import uuid # 파일 업로드 시 UUID 생성을 위함 (옵션, 한글 깨짐 방지용)
-from urllib.parse import quote # 한글 파일명 URL 인코딩을 위함
+import mimetypes 
+# import uuid # UUID는 더 이상 사용하지 않으므로 제거하거나 주석 처리합니다.
+from urllib.parse import quote 
 
 from django.http import JsonResponse, HttpResponseBadRequest, Http404, HttpResponse
-from django.views.decorators.csrf import csrf_exempt # CSRF 보호 비활성화 (보안 주의!)
+from django.views.decorators.csrf import csrf_exempt 
 from django.core.files.base import ContentFile
-from storages.backends.s3boto3 import S3Boto3Storage # django-storages S3 백엔드 사용
+from storages.backends.s3boto3 import S3Boto3Storage 
 
 # Django 모델을 사용한다면:
-# from .models import UploadedFile # models.py에 정의된 UploadedFile 모델을 가정
+# from .models import UploadedFile 
 
 
 # ================================================================
 # 2. 로거 및 스토리지 객체 초기화 (파일 상단에 한 번만)
 # ================================================================
 logger = logging.getLogger(__name__)
-default_storage = S3Boto3Storage() # S3Boto3Storage를 default_storage로 사용
+default_storage = S3Boto3Storage() 
 
 
 # ================================================================
 # 3. 파일 업로드 뷰 (Access -> Django -> S3)
 #    - X-Filename 헤더로 파일명 수신
-#    - 한글 파일명 깨짐 방지를 위해 S3에는 UUID 기반의 영문 파일명으로 저장 권장
+#    - VBA에서 가져온 파일명을 그대로 S3에 저장
 # ================================================================
-@csrf_exempt # Access에서 POST 요청 시 CSRF 토큰을 보내기 어려우므로 일시적으로 비활성화
+@csrf_exempt 
 def upload_file_from_access(request):
     if request.method == 'POST':
         if request.body:
@@ -37,6 +37,7 @@ def upload_file_from_access(request):
             raw_filename_from_access = request.META.get('HTTP_X_FILENAME', 'uploaded_from_access.bin')
             
             # Access VBA에서 한글을 Latin-1으로 인코딩하여 보낼 수 있으므로, UTF-8로 디코딩 시도
+            # 이 processed_original_filename이 S3에 저장될 파일명이 됩니다.
             processed_original_filename = raw_filename_from_access
             try:
                 processed_original_filename = raw_filename_from_access.encode('iso-8859-1').decode('utf-8')
@@ -44,27 +45,30 @@ def upload_file_from_access(request):
                 logger.warning(f"Filename decoding from iso-8859-1 to utf-8 failed for: '{raw_filename_from_access}'. Using raw name.")
             
             logger.info(f"Raw filename from Access (X-Filename header): '{raw_filename_from_access}'")
-            logger.info(f"Processed (potentially decoded) original filename: '{processed_original_filename}'")
+            logger.info(f"Processed (potentially decoded) original filename (S3 target name): '{processed_original_filename}'")
 
-            # S3에 저장할 새로운 영문 파일명 (UUID 기반) 생성
-            # 이것이 핵심: 한글 깨짐 문제 방지 및 S3 파일명 관리 용이
-            file_extension = processed_original_filename.split('.')[-1] if '.' in processed_original_filename else ''
-            s3_storage_filename = f"{uuid.uuid4()}.{file_extension}" 
+            # --- 변경된 부분 시작 ---
+            # UUID 대신 VBA에서 가져온 processed_original_filename을 S3 저장 파일명으로 사용
+            s3_storage_filename = processed_original_filename 
+            # --- 변경된 부분 끝 ---
             
-            logger.info(f"Generated S3 storage filename (UUID-based): '{s3_storage_filename}'")
+            logger.info(f"S3 storage filename (from VBA): '{s3_storage_filename}'")
 
             try:
-                # S3에 파일 저장 시 UUID 기반의 영문 파일명 사용
+                # S3에 파일 저장 시 VBA에서 가져온 파일명 사용
                 file_path_on_s3 = default_storage.save(s3_storage_filename, ContentFile(request.body, name=s3_storage_filename))
                 
                 logger.info(f"File '{s3_storage_filename}' uploaded to S3: {file_path_on_s3}")
                 
-                # (권장) 원본 한글 파일명과 S3에 저장된 영문 파일명을 데이터베이스에 매핑하여 저장
+                # (선택 사항) 원본 파일명과 S3 저장 파일명이 이제 동일하므로,
+                # 별도로 DB에 매핑 정보를 저장하는 코드는 필요 없을 수 있습니다.
+                # 하지만, 만약을 대비하여 (예: 파일명 이력 관리 등) 모델을 사용한다면
+                # 기존 original_filename과 s3_filename 필드를 동일하게 저장할 수 있습니다.
                 # 예시:
                 # try:
                 #     UploadedFile.objects.create(
-                #         original_filename=processed_original_filename,
-                #         s3_filename=s3_storage_filename,
+                #         original_filename=processed_original_filename, # Access에서 받은 이름
+                #         s3_filename=s3_storage_filename,             # S3에 저장된 이름 (이제 동일)
                 #         s3_path=file_path_on_s3
                 #     )
                 #     logger.info(f"File metadata saved: {processed_original_filename} -> {s3_storage_filename}")
@@ -74,7 +78,7 @@ def upload_file_from_access(request):
 
                 return JsonResponse({
                     'status': 'success',
-                    's3_path': file_path_on_s3,
+                    's3_path': file_path_on_s3, # S3에 실제로 저장된 파일명
                     'original_filename_received': processed_original_filename # Access에 확인용으로 반환
                 })
             except Exception as e:
@@ -85,7 +89,8 @@ def upload_file_from_access(request):
     else:
         return HttpResponseBadRequest("Only POST requests are allowed.")
 
-
+# 나머지 download_file_from_s3 뷰 함수는 여기에 이어서 작성됩니다.
+# ... (download_file_from_s3 함수 코드) ...
 # ================================================================
 # 4. 파일 다운로드 뷰 (Access -> Django -> S3)
 #    - URL 경로에서 파일명 수신
