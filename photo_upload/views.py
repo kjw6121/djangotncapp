@@ -59,7 +59,11 @@ def upload_photo_from_phone(request):
 
             # 파일이 성공적으로 업로드되었을 때, 별도의 성공 페이지로 리다이렉트
             # 리다이렉트 시 쿼리 파라미터로 업로드된 파일명을 전달
-            return redirect(reverse('upload_success_page') + f'?filename={s3_target_filename}')
+            return JsonResponse({
+    'status': 'success',
+    'redirect_to': reverse('upload_success_page') + f'?filename={s3_target_filename}'
+})
+
 
         except Exception as e:
             logger.exception(f"Error during S3 upload for '{s3_target_filename}'.")
