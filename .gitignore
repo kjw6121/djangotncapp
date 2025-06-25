@@ -52,21 +52,21 @@ desktop.ini # Windows
 # --- 배포 관련 설정 파일 (프로젝트 내에 직접 두지 않는 것이 좋음) ---
 # 만약 서버별 설정 파일을 Git에 포함시키지 않으려면 (보통 권장)
 # 예: 프로젝트 루트에 .config 디렉토리를 두고 그 안에 서버 설정 파일을 넣었다면
-/.config/
+mysite/.config/
 
 # 특정 설정 파일 (프로젝트 구조에 따라 경로 조정)
 # 예: mysite/settings.py와 같은 위치에 있다면
-# mysite/local_settings.py # 개발 환경 설정
-# mysite/production_settings.py # 배포 환경 설정 (민감 정보 포함 시)
+mysite/local_settings.py # 개발 환경 설정
+mysite/production_settings.py # 배포 환경 설정 (민감 정보 포함 시)
 
 # uWSGI, Nginx 등 서버 설정 파일 (프로젝트 내부에 존재한다면)
 # 만약 .config/uwsgi/mysite.ini 처럼 프로젝트 루트 아래에 있다면
-# /.config/uwsgi/*.ini
-# /.config/nginx/*.conf
-# uwsgi.ini # 프로젝트 루트에 uwsgi.ini가 있다면
-# nginx.conf # 프로젝트 루트에 nginx.conf가 있다면
+/.config/uwsgi/*.ini
+/.config/nginx/*.conf
+uwsgi.ini # 프로젝트 루트에 uwsgi.ini가 있다면
+nginx.conf # 프로젝트 루트에 nginx.conf가 있다면
 
 # Systemd service files (보통 서버의 /etc/systemd/system/ 에 직접 배치)
 # 따라서 프로젝트 Git repo에 포함하지 않는 것이 일반적입니다.
-# uwsgi.service
-# nginx.service
+uwsgi.service
+nginx.service
