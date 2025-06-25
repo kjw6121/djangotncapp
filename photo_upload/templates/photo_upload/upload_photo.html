@@ -170,4 +170,88 @@
                             // UI 업데이트
                             photoContainer.style.display = 'block';
                             chooseFileButton.style.display = 'none'; // 갤러리 선택 버튼 숨김
-                            retakeButton.style.display =
+                            retakeButton.style.display = 'inline-block';
+                            uploadButton.style.display = 'inline-block';
+                            
+                            messageDiv.textContent = '';
+                            messageDiv.classList.remove('error');
+                            messageDiv.classList.remove('success'); // 메시지 초기화
+
+                        }, file.type, 0.9);
+
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+
+            } else {
+                messageDiv.textContent = "이미지 파일을 선택해주세요.";
+                messageDiv.classList.add('error');
+                messageDiv.classList.remove('success');
+            }
+        });
+
+        // S3 업로드 함수
+        uploadButton.addEventListener('click', async () => {
+            if (!currentImageBlob) {
+                messageDiv.textContent = "선택된 사진이 없습니다.";
+                messageDiv.classList.add('error');
+                messageDiv.classList.remove('success');
+                return;
+            }
+
+            messageDiv.textContent = "업로드 중...";
+            messageDiv.classList.remove('error');
+            messageDiv.classList.remove('success');
+
+            const formData = new FormData();
+            formData.append('photo', currentImageBlob, filename); 
+            formData.append('filename', filename); 
+
+            try {
+                const response = await fetch(uploadUrl, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    console.log("Upload successful, server sent redirect. Navigating to success page.");
+                    // 서버가 이미 리다이렉트 응답을 보냈고, fetch가 이를 따라간 최종 URL이 response.url에 있음.
+                    // 이제 브라우저를 최종 성공 페이지로 직접 이동시킵니다.
+                    window.location.href = response.url; 
+                    // 또는 명확하게 uploadSuccessUrl + `?filename=${filename}`으로 이동시킬 수도 있습니다.
+                    // window.location.href = uploadSuccessUrl + `?filename=${filename}`;
+                } else {
+                    // 서버에서 에러 응답 (JSON)을 받았을 경우 (예: 400, 500 상태 코드)
+                    // 이 블록은 이제 HTTP 400/500 에러 응답일 때만 실행됩니다.
+                    const result = await response.json(); 
+                    messageDiv.textContent = `업로드 실패: ${result.message || '알 수 없는 오류'}`;
+                    messageDiv.classList.add('error');
+                    messageDiv.classList.remove('success');
+                    // 실패 시에는 다시 선택 버튼과 업로드 버튼을 다시 표시
+                    retakeButton.style.display = 'inline-block';
+                    uploadButton.style.display = 'inline-block';
+                    chooseFileButton.style.display = 'none'; 
+                    photoContainer.style.display = 'block'; 
+                }
+            } catch (error) {
+                // 네트워크 오류 (서버에 도달하지 못함, CORS, JSON 파싱 실패 등)
+                console.error("업로드 오류:", error);
+                messageDiv.textContent = `네트워크 오류 또는 서버 통신 실패: ${error.message}`;
+                messageDiv.classList.add('error');
+                messageDiv.classList.remove('success');
+                // 네트워크 오류 시에도 다시 선택 버튼과 업로드 버튼을 다시 표시
+                retakeButton.style.display = 'inline-block';
+                uploadButton.style.display = 'inline-block';
+                chooseFileButton.style.display = 'none';
+                photoContainer.style.display = 'block';
+            }
+        });
+
+        // 페이지 로드 시 초기 버튼 상태 설정: 갤러리 선택 버튼은 기본적으로 보임
+        window.onload = () => {
+            photoContainer.style.display = 'none'; // 사진 미리보기는 숨겨져 시작
+        };
+    </script>
+</body>
+</html>
