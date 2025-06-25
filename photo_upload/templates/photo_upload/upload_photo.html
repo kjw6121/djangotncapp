@@ -7,8 +7,9 @@
     <style>
         body { font-family: Arial, sans-serif; text-align: center; margin: 20px; background-color: #f4f4f4; }
         h1 { color: #333; }
-        #video-container, #photo-container { margin: 20px auto; border: 1px solid #ccc; max-width: 600px; background-color: #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        video, canvas, img { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+        /* 카메라 미리보기가 없어졌으므로 video-container 스타일 제거 */
+        #photo-container { margin: 20px auto; border: 1px solid #ccc; max-width: 600px; background-color: #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        canvas, img { display: block; max-width: 100%; height: auto; margin: 0 auto; }
         /* 버튼 스타일 */
         button, .custom-file-upload { /* custom-file-upload는 label에 적용 */
             padding: 10px 20px;
@@ -47,24 +48,18 @@
     <h1>거래명세서 업로드</h1>
     <p>저장될 파일명: <strong>{{ filename }}</strong></p>
 
-    <div id="video-container">
-        <video id="video" autoplay playsinline></video>
-    </div>
-
     <div id="photo-container" style="display:none;">
         <canvas id="canvas" style="display:none;"></canvas>
-        <img id="photo" alt="촬영된 사진">
+        <img id="photo" alt="선택된 사진">
     </div>
 
     <div class="button-group">
-        <button id="startCameraButton">카메라 시작</button>
-        <button id="takePhotoButton" style="display:none;">사진 촬영</button>
-        <button id="retakeButton" style="display:none;">다시 촬영</button>
+        <button id="retakeButton" style="display:none;">다시 선택</button>
 
-        <label for="file-input" id="chooseFileButton" class="custom-file-upload" style="display:none;">
+        <label for="file-input" id="chooseFileButton" class="custom-file-upload">
             갤러리에서 선택
             <input type="file" id="file-input" accept="image/*">
-            </label>
+        </label>
 
         <button id="uploadButton" style="display:none;">S3 업로드</button>
     </div>
@@ -72,170 +67,108 @@
     <div id="message"></div>
 
     <script>
-        const video = document.getElementById('video');
+        // const video = document.getElementById('video'); // 카메라 관련 요소 제거
         const canvas = document.getElementById('canvas');
         const photo = document.getElementById('photo');
-        const startCameraButton = document.getElementById('startCameraButton');
-        const takePhotoButton = document.getElementById('takePhotoButton');
-        const retakeButton = document.getElementById('retakeButton');
+        // const startCameraButton = document.getElementById('startCameraButton'); // 카메라 관련 요소 제거
+        // const takePhotoButton = document.getElementById('takePhotoButton'); // 카메라 관련 요소 제거
+        const retakeButton = document.getElementById('retakeButton'); // 다시 선택 버튼으로 활용
         const uploadButton = document.getElementById('uploadButton');
         const messageDiv = document.getElementById('message');
-        // 'fileInput'은 label 내부에 있으므로 이제 이 변수를 통해 접근합니다.
         const fileInput = document.getElementById('file-input'); 
-        // 'chooseFileButton'은 이제 label 요소 자체입니다.
         const chooseFileButton = document.getElementById('chooseFileButton'); 
-        const videoContainer = document.getElementById('video-container');
+        // const videoContainer = document.getElementById('video-container'); // 카메라 관련 요소 제거
         const photoContainer = document.getElementById('photo-container');
 
-        let stream;
         let currentImageBlob = null;
         const filename = "{{ filename }}"; 
         const uploadUrl = "{{ upload_url }}";
 
-        // 카메라 시작 함수
-        async function startCamera() {
-            try {
-                if (stream) {
-                    stream.getTracks().forEach(track => track.stop());
-                }
-                stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { 
-                        facingMode: 'environment',
-                        width: { ideal: 1920 },    // 너비를 1920 픽셀로 요청
-                        height: { ideal: 1080 }   // 높이를 1080 픽셀로 요청
-                    } 
-                }); 
-                video.srcObject = stream;
-                videoContainer.style.display = 'block';
-                photoContainer.style.display = 'none';
-                startCameraButton.style.display = 'none';
-                takePhotoButton.style.display = 'inline-block';
-                chooseFileButton.style.display = 'inline-block'; // '갤러리에서 선택' 버튼 표시
-                retakeButton.style.display = 'none';
-                uploadButton.style.display = 'none';
-                messageDiv.textContent = '';
-                messageDiv.classList.remove('error');
-            } catch (err) {
-                console.error("카메라 접근 오류: ", err);
-                messageDiv.textContent = "카메라 접근 권한이 없거나 카메라를 사용할 수 없습니다. (오류: " + err.name + ")";
-                messageDiv.classList.add('error');
-                startCameraButton.style.display = 'inline-block'; 
-                chooseFileButton.style.display = 'inline-block'; // 오류 시에도 갤러리 선택 버튼은 보이도록
-            }
-        }
+        // 카메라 시작 함수는 더 이상 필요 없음
+        // async function startCamera() { ... }
 
-        // 사진 촬영 함수
-        takePhotoButton.addEventListener('click', () => {
-            if (!stream) {
-                messageDiv.textContent = "먼저 카메라를 시작하세요.";
-                messageDiv.classList.add('error');
-                return;
-            }
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            canvas.toBlob((blob) => {
-                currentImageBlob = blob;
-                photo.src = URL.createObjectURL(blob);
-                
-                videoContainer.style.display = 'none';
-                photoContainer.style.display = 'block';
-                takePhotoButton.style.display = 'none';
-                chooseFileButton.style.display = 'none'; // '갤러리에서 선택' 버튼 숨김
-                retakeButton.style.display = 'inline-block';
-                uploadButton.style.display = 'inline-block';
-                
-                if (stream) {
-                    stream.getTracks().forEach(track => track.stop());
-                    stream = null;
-                }
-            }, 'image/jpeg', 0.9);
-        });
+        // 사진 촬영 버튼 이벤트 리스너는 더 이상 필요 없음
+        // takePhotoButton.addEventListener('click', () => { ... });
 
-        // 다시 촬영 버튼
+        // '다시 선택' 버튼 클릭 시
         retakeButton.addEventListener('click', () => {
             currentImageBlob = null;
             photo.src = "";
-            startCamera(); 
+            photoContainer.style.display = 'none'; // 사진 미리보기 숨김
+            retakeButton.style.display = 'none';    // 다시 선택 버튼 숨김
+            uploadButton.style.display = 'none';    // 업로드 버튼 숨김
+            chooseFileButton.style.display = 'inline-block'; // 갤러리 선택 버튼 다시 표시
+            messageDiv.textContent = '';
+            messageDiv.classList.remove('error');
+            fileInput.value = ''; // input file 선택 초기화 (동일 파일 재선택 가능하게)
         });
 
-// **추가 또는 수정: 최대 해상도 설정**
-const MAX_IMAGE_WIDTH = 1000;  // 원하는 최대 너비 (예: 1000px)
-const MAX_IMAGE_HEIGHT = 1000; // 원하는 최대 높이 (예: 1000px)
+        // **추가 또는 수정: 최대 해상도 설정**
+        const MAX_IMAGE_WIDTH = 1000;  // 원하는 최대 너비 (예: 1000px)
+        const MAX_IMAGE_HEIGHT = 1000; // 원하는 최대 높이 (예: 1000px)
 
-// 갤러리에서 파일 선택 (input change 이벤트)
-fileInput.addEventListener('change', (event) => {
-    const file = event.target.files[0];
+        // 갤러리에서 파일 선택 (input change 이벤트)
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
 
-    if (file && file.type.startsWith('image/')) {
-        // 파일을 읽기 위한 FileReader
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = new Image();
-            img.onload = () => {
-                let width = img.width;
-                let height = img.height;
+            if (file && file.type.startsWith('image/')) {
+                // 파일을 읽기 위한 FileReader
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        let width = img.width;
+                        let height = img.height;
 
-                // 이미지가 설정된 최대 크기를 초과하는 경우에만 리사이징
-                if (width > MAX_IMAGE_WIDTH || height > MAX_IMAGE_HEIGHT) {
-                    const ratio = Math.min(MAX_IMAGE_WIDTH / width, MAX_IMAGE_HEIGHT / height);
-                    width = Math.round(width * ratio);
-                    height = Math.round(height * ratio);
-                }
+                        // 이미지가 설정된 최대 크기를 초과하는 경우에만 리사이징
+                        if (width > MAX_IMAGE_WIDTH || height > MAX_IMAGE_HEIGHT) {
+                            const ratio = Math.min(MAX_IMAGE_WIDTH / width, MAX_IMAGE_HEIGHT / height);
+                            width = Math.round(width * ratio);
+                            height = Math.round(height * ratio);
+                        }
 
-                // Canvas 생성 및 이미지 그리기
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = width;
-                canvas.height = height;
-                
-                // 이미지 회전 처리 (선택 사항: 모바일 사진의 Exif 정보에 따라 회전이 필요할 수 있습니다)
-                // 만약 사진이 특정 방향으로 돌아가는 문제가 발생하면 이 부분 고려
-                /*
-                // 예시: ExifOrientation.js 같은 라이브러리를 사용하거나 직접 구현
-                // ExifOrientation.correct(img, width, height, ctx, callbackFunction);
-                */
+                        // Canvas 생성 및 이미지 그리기
+                        const canvasTemp = document.createElement('canvas'); // 임시 캔버스 변수 이름 변경
+                        const ctx = canvasTemp.getContext('2d');
+                        canvasTemp.width = width;
+                        canvasTemp.height = height;
+                        
+                        ctx.drawImage(img, 0, 0, width, height);
 
-                ctx.drawImage(img, 0, 0, width, height);
+                        // 리사이징된 이미지를 Blob으로 변환
+                        canvasTemp.toBlob((blob) => {
+                            currentImageBlob = blob;
+                            photo.src = URL.createObjectURL(blob); // 리사이징된 사진 미리보기
+                            
+                            // UI 업데이트
+                            // videoContainer.style.display = 'none'; // 카메라 미리보기 제거
+                            photoContainer.style.display = 'block'; // 사진 미리보기 표시
+                            // takePhotoButton.style.display = 'none'; // 카메라 관련 제거
+                            chooseFileButton.style.display = 'none'; // 갤러리 선택 버튼 숨김
+                            retakeButton.style.display = 'inline-block'; // '다시 선택' 버튼 표시
+                            uploadButton.style.display = 'inline-block'; // 업로드 버튼 표시
+                            
+                            // if (stream) { ... } // 카메라 스트림 관련 제거
+                            messageDiv.textContent = '';
+                            messageDiv.classList.remove('error');
 
-                // 리사이징된 이미지를 Blob으로 변환
-                canvas.toBlob((blob) => {
-                    currentImageBlob = blob;
-                    photo.src = URL.createObjectURL(blob); // 리사이징된 사진 미리보기
-                    
-                    // UI 업데이트 (기존과 동일)
-                    videoContainer.style.display = 'none';
-                    photoContainer.style.display = 'block';
-                    takePhotoButton.style.display = 'none';
-                    chooseFileButton.style.display = 'none';
-                    retakeButton.style.display = 'inline-block';
-                    uploadButton.style.display = 'inline-block';
-                    
-                    if (stream) { // 카메라 스트림 중지
-                        stream.getTracks().forEach(track => track.stop());
-                        stream = null;
-                    }
-                    messageDiv.textContent = '';
-                    messageDiv.classList.remove('error');
+                        }, file.type, 0.9); // 원본 파일 형식 유지, 품질 90%로 압축
 
-                }, file.type, 0.9); // 원본 파일 형식 유지, 품질 90%로 압축
+                    };
+                    img.src = e.target.result; // FileReader로 읽은 데이터를 이미지 src로 설정
+                };
+                reader.readAsDataURL(file); // 파일을 Data URL로 읽기
 
-            };
-            img.src = e.target.result; // FileReader로 읽은 데이터를 이미지 src로 설정
-        };
-        reader.readAsDataURL(file); // 파일을 Data URL로 읽기
-
-    } else {
-        messageDiv.textContent = "이미지 파일을 선택해주세요.";
-        messageDiv.classList.add('error');
-    }
-});
+            } else {
+                messageDiv.textContent = "이미지 파일을 선택해주세요.";
+                messageDiv.classList.add('error');
+            }
+        });
 
         // S3 업로드 함수
         uploadButton.addEventListener('click', async () => {
             if (!currentImageBlob) {
-                messageDiv.textContent = "촬영되거나 선택된 사진이 없습니다.";
+                messageDiv.textContent = "선택된 사진이 없습니다."; // 메시지 변경
                 messageDiv.classList.add('error');
                 return;
             }
@@ -256,18 +189,20 @@ fileInput.addEventListener('change', (event) => {
                 const result = await response.json();
 
                 if (response.ok) {
-                    messageDiv.textContent = `업로드 성공! 파일명: ${result.filename_uploaded}`;
+                    messageDiv.textContent = `업로드 성공! 파일명: ${result.filename_uploaded}. WMS에서 업로드 완료버튼을 클릭해주세요.`; // WMS 메시지 추가
                     messageDiv.classList.remove('error');
                     
-                    takePhotoButton.style.display = 'none';
-                    retakeButton.style.display = 'none';
-                    uploadButton.style.display = 'none';
-                    startCameraButton.style.display = 'inline-block';
-                    chooseFileButton.style.display = 'inline-block'; // 성공 후 다시 보이도록
-                    photoContainer.style.display = 'none';
-                    videoContainer.style.display = 'none';
+                    // 성공 후 UI 초기화 (갤러리 선택 가능하게)
+                    // takePhotoButton.style.display = 'none'; // 제거
+                    retakeButton.style.display = 'none'; // 다시 선택 버튼 숨김
+                    uploadButton.style.display = 'none'; // 업로드 버튼 숨김
+                    // startCameraButton.style.display = 'inline-block'; // 제거
+                    chooseFileButton.style.display = 'inline-block'; // 갤러리 선택 버튼 다시 표시
+                    photoContainer.style.display = 'none'; // 사진 미리보기 숨김
+                    // videoContainer.style.display = 'none'; // 제거
                     currentImageBlob = null;
                     photo.src = "";
+                    fileInput.value = ''; // input file 선택 초기화
 
                 } else {
                     messageDiv.textContent = `업로드 실패: ${result.message || '알 수 없는 오류'}`;
@@ -280,16 +215,16 @@ fileInput.addEventListener('change', (event) => {
             }
         });
 
-        // 페이지 로드 시 초기 버튼 상태 설정
+        // 페이지 로드 시 초기 버튼 상태 설정 (갤러리 선택 버튼만 보이도록)
         window.onload = () => {
-            startCameraButton.style.display = 'inline-block';
-            chooseFileButton.style.display = 'inline-block'; // '갤러리에서 선택' 버튼도 초기에도 보이도록
-            videoContainer.style.display = 'none';
-            photoContainer.style.display = 'none';
+            // startCameraButton.style.display = 'inline-block'; // 제거
+            chooseFileButton.style.display = 'inline-block'; // 갤러리 선택 버튼만 초기에도 보이도록
+            // videoContainer.style.display = 'none'; // 제거
+            photoContainer.style.display = 'none'; // 사진 미리보기 숨김
         };
 
-        // 카메라 시작 버튼 이벤트 리스너
-        startCameraButton.addEventListener('click', startCamera);
+        // 카메라 시작 버튼 이벤트 리스너 제거
+        // startCameraButton.addEventListener('click', startCamera);
     </script>
 </body>
 </html>
