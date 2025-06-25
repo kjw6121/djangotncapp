@@ -5,34 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>업로드 완료</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; background-color: #f4f4f4; }
-        h1 { color: #333; }
-        #message { margin-top: 20px; font-weight: bold; color: green; }
-        .error { color: red; }
-        .button-group { margin-top: 20px; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+            text-align: center;
+            display: flex; /* Flexbox를 사용하여 내용 중앙 정렬 */
+            flex-direction: column; /* 세로 방향 정렬 */
+            justify-content: center; /* 수직 중앙 정렬 */
+            align-items: center; /* 수평 중앙 정렬 */
+            min-height: 100vh; /* 뷰포트 높이 전체 사용 */
+        }
+        h1 {
+            color: #28a745; /* 성공 메시지와 어울리는 색상 */
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+        strong {
+            color: #0056b3;
+        }
         button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin: 10px;
+            padding: 12px 25px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
             background-color: #007bff;
             color: white;
-            border: none;
-            border-radius: 5px;
+            transition: background-color 0.3s ease;
         }
-        button:hover { background-color: #0056b3; }
+        button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
-    <h1>거래명세서 업로드</h1>
-    
-    <div id="message">
-        <p>업로드 성공! 파일명: <strong>{{ filename_uploaded }}</strong></p>
-        <p>WMS에서 업로드 완료버튼을 클릭해주세요.</p>
-    </div>
+    <h1>업로드 성공!</h1>
+    <p>파일: <strong>{{ filename_uploaded }}</strong> 이(가) 성공적으로 업로드되었습니다.</p>
+    <p>WMS에서 업로드 완료 버튼을 클릭해주세요.</p>
 
-    <div class="button-group">
-        <button onclick="window.history.back()">뒤로 가기</button>
-        </div>
+    <button id="confirmButton">확인</button>
+
+    <script>
+        const confirmButton = document.getElementById('confirmButton');
+
+        confirmButton.addEventListener('click', () => {
+            // 현재 브라우저 창을 닫습니다.
+            // 대부분의 최신 브라우저에서는 사용자의 스크립트에 의해 열리지 않은 창은 닫히지 않을 수 있습니다.
+            // 하지만 window.open()으로 열린 팝업 창이거나,
+            // 웹뷰(예: 앱 내 브라우저)에서는 잘 동작할 가능성이 높습니다.
+            window.close();
+        });
+
+        // 팝업으로 열린 경우에만 닫기 버튼을 표시하거나 동작하도록 할 수도 있습니다.
+        // if (window.opener) {
+        //     confirmButton.style.display = 'block'; // '확인' 버튼을 표시
+        // } else {
+        //     confirmButton.style.display = 'none'; // 일반 브라우저 탭에서는 숨김
+        // }
+    </script>
 </body>
 </html>
