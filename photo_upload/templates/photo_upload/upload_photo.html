@@ -141,7 +141,7 @@
                     
                 } else {
                     // 서버에서 에러 응답 (JSON)을 받았을 경우
-                    const result = await response.json(); // 에러 메시지를 파싱
+                    //const result = await response.json(); // 에러 메시지를 파싱
                     messageDiv.textContent = `업로드 실패: ${result.message || '알 수 없는 오류'}`;
                     messageDiv.classList.add('error');
                     // 실패 시에는 다시 선택 버튼과 업로드 버튼을 다시 표시할 수 있습니다.
