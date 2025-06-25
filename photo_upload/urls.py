@@ -6,4 +6,5 @@ urlpatterns = [
     # Access에서 QR 코드를 통해 접근할 URL
     # 예: https://etnclogis.com/upload-photo-to-s3/?filename=my_image.jpg
     path('upload-photo-to-s3/', views.upload_photo_from_phone, name='upload_photo_from_phone'),
+    path('upload/success/', views.upload_success_view, name='upload_success_page'),
 ]

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>업로드 완료</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; background-color: #f4f4f4; }
+        h1 { color: #333; }
+        #message { margin-top: 20px; font-weight: bold; color: green; }
+        .error { color: red; }
+        .button-group { margin-top: 20px; }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>거래명세서 업로드</h1>
+    
+    <div id="message">
+        <p>업로드 성공! 파일명: <strong>{{ filename_uploaded }}</strong></p>
+        <p>WMS에서 업로드 완료버튼을 클릭해주세요.</p>
+    </div>
+
+    <div class="button-group">
+        <button onclick="window.history.back()">뒤로 가기</button>
+        </div>
+</body>
+</html>
