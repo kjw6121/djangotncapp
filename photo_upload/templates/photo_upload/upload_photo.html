@@ -98,17 +98,38 @@
                 }
                 stream = await navigator.mediaDevices.getUserMedia({ 
                     video: { 
-                        facingMode: 'environment',
-                        width: { ideal: 1920 }, 
-                        height: { ideal: 1080 } 
+                        facingMode: 'environment', // 후면 카메라 우선
+                        width: { ideal: 1920 },    // 너비 요청
+                        height: { ideal: 1080 },   // 높이 요청
+                        focusMode: 'continuous'    // 연속 자동 초점 요청
                     } 
                 }); 
                 video.srcObject = stream;
+
+                // 비디오 메타데이터 로드 후 초점 모드 적용 시도 (선택 사항)
+                video.onloadedmetadata = () => {
+                    video.play();
+                    const track = stream.getVideoTracks()[0];
+                    const capabilities = track.getCapabilities();
+
+                    if (capabilities.focusMode && capabilities.focusMode.includes('continuous')) {
+                        track.applyConstraints({
+                            advanced: [{ focusMode: 'continuous' }]
+                        }).then(() => {
+                            console.log("연속 자동 초점 설정 성공");
+                        }).catch(e => {
+                            console.error("연속 자동 초점 설정 실패:", e);
+                        });
+                    } else {
+                        console.warn("이 장치는 연속 자동 초점 모드를 지원하지 않거나 이미 활성화되어 있습니다.");
+                    }
+                };
+
                 videoContainer.style.display = 'block';
                 photoContainer.style.display = 'none';
-                startCameraButton.style.display = 'none'; // 카메라 시작 후 "카메라 시작" 버튼 숨김
-                takePhotoButton.style.display = 'inline-block'; // "사진 촬영" 버튼 표시
-                chooseFileButton.style.display = 'inline-block'; // "갤러리에서 선택" 버튼 계속 표시
+                startCameraButton.style.display = 'none'; 
+                takePhotoButton.style.display = 'inline-block'; 
+                chooseFileButton.style.display = 'inline-block'; 
                 retakeButton.style.display = 'none';
                 uploadButton.style.display = 'none';
                 messageDiv.textContent = '';
@@ -117,8 +138,8 @@
                 console.error("카메라 접근 오류: ", err);
                 messageDiv.textContent = "카메라를 시작할 수 없습니다. (오류: " + err.name + ")";
                 messageDiv.classList.add('error');
-                startCameraButton.style.display = 'inline-block'; // 오류 시 "카메라 시작" 버튼 다시 표시
-                chooseFileButton.style.display = 'inline-block'; // 오류 시에도 "갤러리 선택" 버튼은 보이도록
+                startCameraButton.style.display = 'inline-block'; 
+                chooseFileButton.style.display = 'inline-block'; 
             }
         }
 
@@ -140,7 +161,7 @@
                 videoContainer.style.display = 'none';
                 photoContainer.style.display = 'block';
                 takePhotoButton.style.display = 'none';
-                chooseFileButton.style.display = 'none'; // 촬영 후 '갤러리에서 선택' 버튼 숨김
+                chooseFileButton.style.display = 'none'; 
                 retakeButton.style.display = 'inline-block';
                 uploadButton.style.display = 'inline-block';
                 
@@ -157,10 +178,10 @@
         retakeButton.addEventListener('click', () => {
             currentImageBlob = null;
             photo.src = "";
-            startCamera(); // 다시 촬영 시 카메라 재시작
+            startCamera(); 
         });
 
-        // **최대 해상도 설정**
+        // **갤러리 이미지 리사이징 설정**
         const MAX_IMAGE_WIDTH = 1000;  // 원하는 최대 너비 (예: 1000px)
         const MAX_IMAGE_HEIGHT = 1000; // 원하는 최대 높이 (예: 1000px)
 
@@ -183,7 +204,8 @@
                             height = Math.round(height * ratio);
                         }
 
-                        const canvasTemp = document.createElement('canvas'); // 기존 canvas와 충돌 방지
+                        // 갤러리 이미지 처리를 위한 임시 Canvas 생성
+                        const canvasTemp = document.createElement('canvas'); 
                         const ctx = canvasTemp.getContext('2d');
                         canvasTemp.width = width;
                         canvasTemp.height = height;
@@ -192,12 +214,12 @@
 
                         canvasTemp.toBlob((blob) => {
                             currentImageBlob = blob;
-                            photo.src = URL.createObjectURL(blob);
+                            photo.src = URL.createObjectURL(blob); 
                             
                             videoContainer.style.display = 'none';
                             photoContainer.style.display = 'block';
                             takePhotoButton.style.display = 'none';
-                            chooseFileButton.style.display = 'none'; // 갤러리 선택 후 버튼 숨김
+                            chooseFileButton.style.display = 'none'; 
                             retakeButton.style.display = 'inline-block';
                             uploadButton.style.display = 'inline-block';
                             
@@ -208,7 +230,7 @@
                             messageDiv.textContent = '';
                             messageDiv.classList.remove('error');
 
-                        }, file.type, 0.9);
+                        }, file.type, 0.9); 
 
                     };
                     img.src = e.target.result;
@@ -245,7 +267,7 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    messageDiv.textContent = `업로드 성공! 파일명: ${result.filename_uploaded}. WMS에서 업로드 완료버튼을 클릭해주세요.`; // 최종 메시지 추가
+                    messageDiv.textContent = `업로드 성공! 파일명: ${result.filename_uploaded}. WMS에서 업로드 완료버튼을 클릭해주세요.`; 
                     messageDiv.classList.remove('error');
                     
                     // 성공 후 모든 버튼 숨기고 '카메라 시작'과 '갤러리에서 선택'만 보이도록
@@ -273,7 +295,7 @@
         // 페이지 로드 시 초기 버튼 상태 설정
         window.onload = () => {
             startCameraButton.style.display = 'inline-block';
-            chooseFileButton.style.display = 'inline-block'; // '갤러리에서 선택' 버튼도 초기에도 보이도록
+            chooseFileButton.style.display = 'inline-block'; 
             videoContainer.style.display = 'none';
             photoContainer.style.display = 'none';
         };
