@@ -1,31 +1,3 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>거래명세서 업로드</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; background-color: #f4f4f4; }
-        h1 { color: #333; }
-        #message { margin-top: 20px; font-weight: bold; color: green; }
-        .error { color: red; }
-        .button-group { margin-top: 20px; }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin: 10px;
-            cursor: pointer;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-        button:hover { background-color: #0056b3; }
-        .custom-file-upload input[type="file"] {
-            display: none;
-        }
-    </style>
-</head>
 <body>
     <h1>거래명세서 업로드</h1>
     <p>저장될 파일명: <strong>{{ filename }}</strong></p>
@@ -60,24 +32,26 @@
 
         let currentImageBlob = null;
         const filename = "{{ filename }}"; 
-        const uploadUrl = "{{ upload_url }}"; 
-        const uploadSuccessUrl = "{{ upload_success_url }}"; 
+        const uploadUrl = "{{ upload_url }}"; // 현재 뷰 URL
+        const uploadSuccessUrl = "{{ upload_success_url }}"; // 성공 페이지 URL <<< 이 부분 추가!
 
+        // '다시 선택' 버튼 클릭 시: 갤러리 선택 버튼 다시 표시
         retakeButton.addEventListener('click', () => {
             currentImageBlob = null;
             photo.src = "";
-            photoContainer.style.display = 'none'; 
-            retakeButton.style.display = 'none';    
-            uploadButton.style.display = 'none';    
-            chooseFileButton.style.display = 'inline-block'; 
+            photoContainer.style.display = 'none'; // 사진 미리보기 숨김
+            retakeButton.style.display = 'none';    // 다시 선택 버튼 숨김
+            uploadButton.style.display = 'none';    // 업로드 버튼 숨김
+            chooseFileButton.style.display = 'inline-block'; // 갤러리 선택 버튼 다시 표시
             messageDiv.textContent = '';
             messageDiv.classList.remove('error');
-            fileInput.value = ''; 
+            fileInput.value = ''; // input file 선택 초기화 (동일 파일 재선택 가능하게)
         });
 
         const MAX_IMAGE_WIDTH = 1000;
         const MAX_IMAGE_HEIGHT = 1000;
 
+        // 갤러리에서 파일 선택 (input change 이벤트)
         fileInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
 
@@ -106,18 +80,22 @@
                             currentImageBlob = blob;
                             photo.src = URL.createObjectURL(blob);
                             
+                            // UI 업데이트
                             photoContainer.style.display = 'block';
-                            chooseFileButton.style.display = 'none'; 
+                            chooseFileButton.style.display = 'none'; // 갤러리 선택 버튼 숨김
                             retakeButton.style.display = 'inline-block';
                             uploadButton.style.display = 'inline-block';
                             
                             messageDiv.textContent = '';
                             messageDiv.classList.remove('error');
+
                         }, file.type, 0.9);
+
                     };
                     img.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
+
             } else {
                 messageDiv.textContent = "이미지 파일을 선택해주세요.";
                 messageDiv.classList.add('error');
@@ -145,22 +123,38 @@
                     body: formData,
                 });
 
-                const result = await response.json();
-
-                if (response.ok && result.status === 'success') {
-                    window.location.href = result.redirect_to;
+                // 서버는 성공 시 리다이렉트 응답을, 실패 시 JSON 응답을 줄 것입니다.
+                // 따라서, response.ok 상태를 먼저 확인하고 처리합니다.
+                if (response.ok) {
+                    // 서버가 200 OK 응답을 주면서 리다이렉트 헤더를 보낼 것이므로,
+                    // 이 fetch는 실제 페이지 이동을 트리거하지 않습니다.
+                    // 대신, 서버가 보낸 리다이렉션 응답을 브라우저가 처리하여 새 페이지로 이동합니다.
+                    // 따라서 여기서는 명시적인 JavaScript 리다이렉션 로직이 필요 없습니다.
+                    // (response.json()을 시도하면 에러가 날 수 있음, 왜냐하면 서버는 JSON이 아닌 리다이렉트를 보냈기 때문)
+                    // 이 부분이 실행되었다는 것은 서버로부터 성공적인 리다이렉트 응답을 받았다는 의미이므로,
+                    // 별도의 UI 업데이트 없이 페이지 이동을 기다립니다.
+                    console.log("Upload successful, expecting server-side redirect.");
+                    // messageDiv.textContent = `업로드 성공! 파일명: ${filename}. WMS에서 업로드 완료버튼을 클릭해주세요.`; // 이 메시지는 성공 페이지에서 보여줄 것이므로 여기서는 제거
+                    // messageDiv.classList.remove('error'); // 이 메시지는 성공 페이지에서 보여줄 것이므로 여기서는 제거
+                    // 여기에 추가적인 클라이언트 사이드 UI 변경 로직은 불필요합니다.
+                    // 페이지가 리다이렉트되어 새로운 HTML을 로드할 것이기 때문입니다.
+                    
                 } else {
+                    // 서버에서 에러 응답 (JSON)을 받았을 경우
+                    const result = await response.json(); // 에러 메시지를 파싱
                     messageDiv.textContent = `업로드 실패: ${result.message || '알 수 없는 오류'}`;
                     messageDiv.classList.add('error');
+                    // 실패 시에는 다시 선택 버튼과 업로드 버튼을 다시 표시할 수 있습니다.
                     retakeButton.style.display = 'inline-block';
                     uploadButton.style.display = 'inline-block';
-                    chooseFileButton.style.display = 'none'; 
-                    photoContainer.style.display = 'block'; 
+                    chooseFileButton.style.display = 'none'; // 여전히 파일은 선택되어 있어야 하므로 갤러리 선택은 숨김
+                    photoContainer.style.display = 'block'; // 사진 미리보기는 유지
                 }
             } catch (error) {
                 console.error("업로드 오류:", error);
                 messageDiv.textContent = `네트워크 오류 또는 서버 통신 실패: ${error.message}`;
                 messageDiv.classList.add('error');
+                // 네트워크 오류 시에도 다시 선택 버튼과 업로드 버튼을 다시 표시
                 retakeButton.style.display = 'inline-block';
                 uploadButton.style.display = 'inline-block';
                 chooseFileButton.style.display = 'none';
@@ -168,8 +162,11 @@
             }
         });
 
+        // 페이지 로드 시 초기 버튼 상태 설정: 갤러리 선택 버튼은 기본적으로 보임
         window.onload = () => {
-            photoContainer.style.display = 'none'; 
+            // chooseFileButton.style.display는 HTML에서 제어됨 (기본적으로 block)
+            // 즉, 이 곳에서 display: none을 할 필요 없음
+            photoContainer.style.display = 'none'; // 사진 미리보기는 숨겨져 시작
         };
     </script>
 </body>
