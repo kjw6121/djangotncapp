@@ -7,7 +7,6 @@
     <style>
         body { font-family: Arial, sans-serif; text-align: center; margin: 20px; background-color: #f4f4f4; }
         h1 { color: #333; }
-        /* 카메라 미리보기가 없어졌으므로 video-container 스타일 제거 */
         #photo-container { margin: 20px auto; border: 1px solid #ccc; max-width: 600px; background-color: #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
         canvas, img { display: block; max-width: 100%; height: auto; margin: 0 auto; }
         /* 버튼 스타일 */
@@ -67,52 +66,40 @@
     <div id="message"></div>
 
     <script>
-        // const video = document.getElementById('video'); // 카메라 관련 요소 제거
         const canvas = document.getElementById('canvas');
         const photo = document.getElementById('photo');
-        // const startCameraButton = document.getElementById('startCameraButton'); // 카메라 관련 요소 제거
-        // const takePhotoButton = document.getElementById('takePhotoButton'); // 카메라 관련 요소 제거
-        const retakeButton = document.getElementById('retakeButton'); // 다시 선택 버튼으로 활용
+        const retakeButton = document.getElementById('retakeButton');
         const uploadButton = document.getElementById('uploadButton');
         const messageDiv = document.getElementById('message');
         const fileInput = document.getElementById('file-input'); 
         const chooseFileButton = document.getElementById('chooseFileButton'); 
-        // const videoContainer = document.getElementById('video-container'); // 카메라 관련 요소 제거
         const photoContainer = document.getElementById('photo-container');
 
         let currentImageBlob = null;
         const filename = "{{ filename }}"; 
         const uploadUrl = "{{ upload_url }}";
 
-        // 카메라 시작 함수는 더 이상 필요 없음
-        // async function startCamera() { ... }
-
-        // 사진 촬영 버튼 이벤트 리스너는 더 이상 필요 없음
-        // takePhotoButton.addEventListener('click', () => { ... });
-
-        // '다시 선택' 버튼 클릭 시
+        // '다시 선택' 버튼 클릭 시: 갤러리 선택 버튼 다시 표시
         retakeButton.addEventListener('click', () => {
             currentImageBlob = null;
             photo.src = "";
             photoContainer.style.display = 'none'; // 사진 미리보기 숨김
             retakeButton.style.display = 'none';    // 다시 선택 버튼 숨김
             uploadButton.style.display = 'none';    // 업로드 버튼 숨김
-            chooseFileButton.style.display = 'inline-block'; // 갤러리 선택 버튼 다시 표시
+            chooseFileButton.style.display = 'inline-block'; // <<< 이 줄을 다시 추가!
             messageDiv.textContent = '';
             messageDiv.classList.remove('error');
             fileInput.value = ''; // input file 선택 초기화 (동일 파일 재선택 가능하게)
         });
 
-        // **추가 또는 수정: 최대 해상도 설정**
-        const MAX_IMAGE_WIDTH = 1000;  // 원하는 최대 너비 (예: 1000px)
-        const MAX_IMAGE_HEIGHT = 1000; // 원하는 최대 높이 (예: 1000px)
+        const MAX_IMAGE_WIDTH = 1000;
+        const MAX_IMAGE_HEIGHT = 1000;
 
         // 갤러리에서 파일 선택 (input change 이벤트)
         fileInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
 
             if (file && file.type.startsWith('image/')) {
-                // 파일을 읽기 위한 FileReader
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const img = new Image();
@@ -120,44 +107,38 @@
                         let width = img.width;
                         let height = img.height;
 
-                        // 이미지가 설정된 최대 크기를 초과하는 경우에만 리사이징
                         if (width > MAX_IMAGE_WIDTH || height > MAX_IMAGE_HEIGHT) {
                             const ratio = Math.min(MAX_IMAGE_WIDTH / width, MAX_IMAGE_HEIGHT / height);
                             width = Math.round(width * ratio);
                             height = Math.round(height * ratio);
                         }
 
-                        // Canvas 생성 및 이미지 그리기
-                        const canvasTemp = document.createElement('canvas'); // 임시 캔버스 변수 이름 변경
+                        const canvasTemp = document.createElement('canvas');
                         const ctx = canvasTemp.getContext('2d');
                         canvasTemp.width = width;
                         canvasTemp.height = height;
                         
                         ctx.drawImage(img, 0, 0, width, height);
 
-                        // 리사이징된 이미지를 Blob으로 변환
                         canvasTemp.toBlob((blob) => {
                             currentImageBlob = blob;
-                            photo.src = URL.createObjectURL(blob); // 리사이징된 사진 미리보기
+                            photo.src = URL.createObjectURL(blob);
                             
                             // UI 업데이트
-                            // videoContainer.style.display = 'none'; // 카메라 미리보기 제거
-                            photoContainer.style.display = 'block'; // 사진 미리보기 표시
-                            // takePhotoButton.style.display = 'none'; // 카메라 관련 제거
+                            photoContainer.style.display = 'block';
                             chooseFileButton.style.display = 'none'; // 갤러리 선택 버튼 숨김
-                            retakeButton.style.display = 'inline-block'; // '다시 선택' 버튼 표시
-                            uploadButton.style.display = 'inline-block'; // 업로드 버튼 표시
+                            retakeButton.style.display = 'inline-block';
+                            uploadButton.style.display = 'inline-block';
                             
-                            // if (stream) { ... } // 카메라 스트림 관련 제거
                             messageDiv.textContent = '';
                             messageDiv.classList.remove('error');
 
-                        }, file.type, 0.9); // 원본 파일 형식 유지, 품질 90%로 압축
+                        }, file.type, 0.9);
 
                     };
-                    img.src = e.target.result; // FileReader로 읽은 데이터를 이미지 src로 설정
+                    img.src = e.target.result;
                 };
-                reader.readAsDataURL(file); // 파일을 Data URL로 읽기
+                reader.readAsDataURL(file);
 
             } else {
                 messageDiv.textContent = "이미지 파일을 선택해주세요.";
@@ -168,7 +149,7 @@
         // S3 업로드 함수
         uploadButton.addEventListener('click', async () => {
             if (!currentImageBlob) {
-                messageDiv.textContent = "선택된 사진이 없습니다."; // 메시지 변경
+                messageDiv.textContent = "선택된 사진이 없습니다.";
                 messageDiv.classList.add('error');
                 return;
             }
@@ -189,17 +170,14 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    messageDiv.textContent = `업로드 성공! 파일명: ${result.filename_uploaded}. WMS에서 업로드 완료버튼을 클릭해주세요.`; // WMS 메시지 추가
+                    messageDiv.textContent = `업로드 성공! 파일명: ${result.filename_uploaded}. WMS에서 업로드 완료버튼을 클릭해주세요.`;
                     messageDiv.classList.remove('error');
                     
-                    // 성공 후 UI 초기화 (갤러리 선택 가능하게)
-                    // takePhotoButton.style.display = 'none'; // 제거
-                    retakeButton.style.display = 'none'; // 다시 선택 버튼 숨김
-                    uploadButton.style.display = 'none'; // 업로드 버튼 숨김
-                    // startCameraButton.style.display = 'inline-block'; // 제거
-                    chooseFileButton.style.display = 'inline-block'; // 갤러리 선택 버튼 다시 표시
+                    // 성공 후 UI 초기화: '다시 선택' 및 '업로드' 버튼 숨김
+                    retakeButton.style.display = 'none'; 
+                    uploadButton.style.display = 'none'; 
+                    // chooseFileButton.style.display = 'none'; // <<< 이 줄은 유지 (업로드 완료 후 숨김)
                     photoContainer.style.display = 'none'; // 사진 미리보기 숨김
-                    // videoContainer.style.display = 'none'; // 제거
                     currentImageBlob = null;
                     photo.src = "";
                     fileInput.value = ''; // input file 선택 초기화
@@ -215,16 +193,11 @@
             }
         });
 
-        // 페이지 로드 시 초기 버튼 상태 설정 (갤러리 선택 버튼만 보이도록)
+        // 페이지 로드 시 초기 버튼 상태 설정: 갤러리 선택 버튼은 기본적으로 보임
         window.onload = () => {
-            // startCameraButton.style.display = 'inline-block'; // 제거
-            chooseFileButton.style.display = 'inline-block'; // 갤러리 선택 버튼만 초기에도 보이도록
-            // videoContainer.style.display = 'none'; // 제거
-            photoContainer.style.display = 'none'; // 사진 미리보기 숨김
+            // chooseFileButton.style.display = 'none'; // <<< 이 줄을 삭제!
+            photoContainer.style.display = 'none';
         };
-
-        // 카메라 시작 버튼 이벤트 리스너 제거
-        // startCameraButton.addEventListener('click', startCamera);
     </script>
 </body>
 </html>
