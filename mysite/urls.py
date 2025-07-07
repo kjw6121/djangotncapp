@@ -1,8 +1,6 @@
 from django.contrib import admin
 from django.urls import include, path
-
 from django.contrib.auth.views import LoginView, LogoutView
-
 from mysite.views import *
 
 urlpatterns = [
@@ -16,6 +14,8 @@ urlpatterns = [
     path('signup/', signup, name='signup'),
     path('main/', main, name='main'),
     path('accesstos3/', include('accesstos3.urls')),
-    path('qr/', include('qrcode_api.urls')), 
-    path('', include('photo_upload.urls')),
-]
+    path('qr/', include('qrcode_api.urls')),
+    path('photo/', include('photo_upload.urls')),
+
+    path('qr-upload/', include('qr_upload.urls')), # <--- 이 부분 변경
+ ]

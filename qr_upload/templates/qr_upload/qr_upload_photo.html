@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR코드 업로드</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+            text-align: center;
+        }
+        h1 {
+            color: #0056b3;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        #photo-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #photo {
+            max-width: 90%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: block; /* img 중앙 정렬을 위해 */
+            margin: 0 auto; /* img 중앙 정렬 */
+        }
+        .button-group {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap; /* 작은 화면에서 버튼 줄 바꿈 */
+        }
+        button, .custom-file-upload {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .custom-file-upload {
+            background-color: #28a745;
+            color: white;
+            display: inline-block;
+            text-align: center;
+            line-height: 20px; /* 높이 조절 */
+        }
+        .custom-file-upload:hover {
+            background-color: #218838;
+        }
+        input[type="file"] {
+            display: none; /* 실제 파일 input 숨김 */
+        }
+        #message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        #message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        #message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+    <h1>거래명세서 업로드 (QR)</h1> {# 제목 변경: QR 전용임을 명시 #}
+    <p>저장될 파일명: <strong>{{ filename }}</strong></p> {# 뷰에서 전달받은 filename #}
+
+    <div id="photo-container" style="display:none;">
+        <canvas id="canvas" style="display:none;"></canvas>
+        <img id="photo" alt="선택된 사진">
+    </div>
+
+    <div class="button-group">
+        <button id="retakeButton" style="display:none;">다시 선택</button>
+
+        <label for="file-input" id="chooseFileButton" class="custom-file-upload">
+            사진선택
+            <input type="file" id="file-input" accept="image/*">
+        </label>
+
+        <button id="uploadButton" style="display:none;">S3 업로드</button>
+    </div>
+    
+    <div id="message"></div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const photo = document.getElementById('photo');
+        const retakeButton = document.getElementById('retakeButton');
+        const uploadButton = document.getElementById('uploadButton');
+        const messageDiv = document.getElementById('message');
+        const fileInput = document.getElementById('file-input'); 
+        const chooseFileButton = document.getElementById('chooseFileButton'); 
+        const photoContainer = document.getElementById('photo-container');
+
+        let currentImageBlob = null;
+        // Django 템플릿 변수를 사용하여 URL과 파일명을 가져옴
+        const filename = "{{ filename }}"; 
+        const uploadUrl = "{{ upload_url }}"; // qr_upload/views.py에서 request.path로 전달
+        const uploadSuccessUrl = "{{ upload_success_url }}"; // qr_upload/views.py에서 reverse로 전달
+
+        // '다시 선택' 버튼 클릭 시: 갤러리 선택 버튼 다시 표시
+        retakeButton.addEventListener('click', () => {
+            currentImageBlob = null;
+            photo.src = "";
+            photoContainer.style.display = 'none'; // 사진 미리보기 숨김
+            retakeButton.style.display = 'none';    // 다시 선택 버튼 숨김
+            uploadButton.style.display = 'none';    // 업로드 버튼 숨김
+            chooseFileButton.style.display = 'inline-block'; // 갤러리 선택 버튼 다시 표시
+            messageDiv.textContent = '';
+            messageDiv.classList.remove('error');
+            messageDiv.classList.remove('success'); 
+            fileInput.value = ''; // input file 선택 초기화 (동일 파일 재선택 가능하게)
+        });
+
+        const MAX_IMAGE_WIDTH = 1000;
+        const MAX_IMAGE_HEIGHT = 1000;
+
+        // 갤러리에서 파일 선택 (input change 이벤트)
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > MAX_IMAGE_WIDTH || height > MAX_IMAGE_HEIGHT) {
+                            const ratio = Math.min(MAX_IMAGE_WIDTH / width, MAX_IMAGE_HEIGHT / height);
+                            width = Math.round(width * ratio);
+                            height = Math.round(height * ratio);
+                        }
+
+                        const canvasTemp = document.createElement('canvas');
+                        const ctx = canvasTemp.getContext('2d');
+                        canvasTemp.width = width;
+                        canvasTemp.height = height;
+                        
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        canvasTemp.toBlob((blob) => {
+                            currentImageBlob = blob;
+                            photo.src = URL.createObjectURL(blob);
+                            
+                            // UI 업데이트
+                            photoContainer.style.display = 'block';
+                            chooseFileButton.style.display = 'none'; 
+                            retakeButton.style.display = 'inline-block';
+                            uploadButton.style.display = 'inline-block';
+                            
+                            messageDiv.textContent = '';
+                            messageDiv.classList.remove('error');
+                            messageDiv.classList.remove('success'); 
+
+                        }, file.type, 0.9);
+
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+
+            } else {
+                messageDiv.textContent = "이미지 파일을 선택해주세요.";
+                messageDiv.classList.add('error');
+                messageDiv.classList.remove('success');
+            }
+        });
+
+        // S3 업로드 함수
+        uploadButton.addEventListener('click', async () => {
+            if (!currentImageBlob) {
+                messageDiv.textContent = "선택된 사진이 없습니다.";
+                messageDiv.classList.add('error');
+                messageDiv.classList.remove('success');
+                return;
+            }
+
+            messageDiv.textContent = "업로드 중...";
+            messageDiv.classList.remove('error');
+            messageDiv.classList.remove('success');
+
+            const formData = new FormData();
+            formData.append('photo', currentImageBlob, filename); 
+            formData.append('filename', filename); // 서버 검증을 위해 파일명도 함께 보냄
+
+            try {
+                const response = await fetch(uploadUrl, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    console.log("Upload successful, server sent redirect. Navigating to success page.");
+                    // 서버가 리다이렉트한 최종 URL로 브라우저를 이동시킵니다.
+                    window.location.href = response.url; 
+                } else {
+                    // 서버에서 에러 응답 (JSON)을 받았을 경우
+                    // 예: 400, 403, 500 상태 코드
+                    const result = await response.json(); 
+                    messageDiv.textContent = `업로드 실패: ${result.message || '알 수 없는 오류'}`;
+                    messageDiv.classList.add('error');
+                    messageDiv.classList.remove('success');
+                    // 실패 시에는 다시 선택 버튼과 업로드 버튼을 다시 표시
+                    retakeButton.style.display = 'inline-block';
+                    uploadButton.style.display = 'inline-block';
+                    chooseFileButton.style.display = 'none'; 
+                    photoContainer.style.display = 'block'; 
+                }
+            } catch (error) {
+                // 네트워크 오류 (서버에 도달하지 못함, CORS, JSON 파싱 실패 등)
+                console.error("업로드 오류:", error);
+                messageDiv.textContent = `네트워크 오류 또는 서버 통신 실패: ${error.message}`;
+                messageDiv.classList.add('error');
+                messageDiv.classList.remove('success');
+                // 네트워크 오류 시에도 다시 선택 버튼과 업로드 버튼을 다시 표시
+                retakeButton.style.display = 'inline-block';
+                uploadButton.style.display = 'inline-block';
+                chooseFileButton.style.display = 'none';
+                photoContainer.style.display = 'block';
+            }
+        });
+
+        // 페이지 로드 시 초기 버튼 상태 설정: 갤러리 선택 버튼은 기본적으로 보임
+        window.onload = () => {
+            photoContainer.style.display = 'none'; 
+        };
+    </script>
+</body>
+</html>

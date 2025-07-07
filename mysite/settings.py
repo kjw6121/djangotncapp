@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'image_recognition',
     'qrcode_api',
     'photo_upload',
+	'qr_upload',
 
 ]
 

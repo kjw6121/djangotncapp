@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR코드 업로드 완료</title> {# 제목 변경: QR 전용임을 명시 #}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+            text-align: center;
+            display: flex; /* Flexbox를 사용하여 내용 중앙 정렬 */
+            flex-direction: column; /* 세로 방향 정렬 */
+            justify-content: center; /* 수직 중앙 정렬 */
+            align-items: center; /* 수평 중앙 정렬 */
+            min-height: 100vh; /* 뷰포트 높이 전체 사용 */
+        }
+        h1 {
+            color: #28a745; /* 성공 메시지와 어울리는 색상 */
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1.1em;
+            margin-bottom: 30px; 
+        }
+        strong {
+            color: #0056b3;
+        }
+        button { /* 버튼이 필요하다면 여기에 스타일 유지 */
+            padding: 12px 25px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        button:hover { /* 버튼이 필요하다면 여기에 스타일 유지 */
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>업로드 성공!</h1>
+    <p>파일: <strong>{{ filename_uploaded }}</strong> 이(가) 성공적으로 업로드되었습니다.</p>
+    <p>WMS에서 업로드 완료 버튼을 클릭해주세요.</p>
+
+    {# 확인 버튼을 추가하려면 아래 주석을 해제하고 필요한 동작(예: window.close())을 script 태그에 추가하세요. #}
+    {# <button id="confirmButton">확인</button> #}
+
+    <script>
+        {# 확인 버튼을 없애기로 했으므로, 관련 JavaScript도 제거합니다. #}
+        {# 만약 window.close() 기능을 다시 원하시면 버튼과 함께 이 스크립트를 추가하세요. #}
+        // const confirmButton = document.getElementById('confirmButton');
+        // if (confirmButton) {
+        //     confirmButton.addEventListener('click', () => {
+        //         window.close();
+        //     });
+        // }
+    </script>
+</body>
+</html>
